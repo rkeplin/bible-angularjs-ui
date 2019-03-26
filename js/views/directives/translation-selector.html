@@ -1,0 +1,8 @@
+<select ng-disabled="vm.isLoading"
+        name="selectedTranslation"
+        id="selectedTranslation"
+        ng-model="vm.selected.translation"
+        ng-options="translation.name for translation in vm.translations track by translation.id"
+        ng-change="vm.onSelectTranslation(vm.selected.translation)"
+        style="width: 100px;">
+</select>

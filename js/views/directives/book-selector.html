@@ -1,0 +1,28 @@
+<div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <select ng-disabled="vm.isLoading"
+                    name="selectedBook"
+                    id="selectedBook"
+                    ng-model="vm.selected.book"
+                    ng-options="book.name for book in vm.books track by book.id"
+                    ng-change="vm.onSelectBook(vm.selected.book)"
+                    style="width: 200px;">
+            </select>
+
+            <select ng-disabled="vm.isLoading"
+                    name="selectedChapter"
+                    id="selectedChapter"
+                    ng-model="vm.selected.chapter"
+                    ng-options="chapter.id for chapter in vm.chapters track by chapter.id"
+                    ng-change="vm.onSelectChapter(vm.selected.chapter)"
+                    style="width: 100px;">
+            </select>
+
+            <button ng-disabled="vm.isLoading || vm.disablePreviousBtn" ng-click="vm.onPreviousClick()" class="btn btn-primary">Previous</button>
+            <button ng-disabled="vm.isLoading || vm.disableNextBtn" ng-click="vm.onNextClick()" class="btn btn-primary">Next</button>
+        </div>
+    </div>
+
+</div>

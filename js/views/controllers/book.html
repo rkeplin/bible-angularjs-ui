@@ -1,0 +1,10 @@
+<div id="content" class="row">
+    <div class="col-md-6">
+        <p ng-class="{ 'lightyellow': verse.highlight }" ng-repeat="verse in vm.versesLeft"><a title="View Cross References" href="" ng-click="vm.open('right', verse)"><b> {{ verse.chapterId }}:{{ verse.verseId }}</b></a> {{ verse.verse }}</p>
+    </div>
+    <div class="col-md-6">
+        <p ng-class="{ 'lightyellow': verse.highlight }" ng-repeat="verse in vm.versesRight"><a title="View Cross References" href="" ng-click="vm.open('left', verse)"><b> {{ verse.chapterId }}:{{ verse.verseId }}</b></a> {{ verse.verse }}</p>
+    </div>
+</div>
+
+<cross-reference-modal></cross-reference-modal>

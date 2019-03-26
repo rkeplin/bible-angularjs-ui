@@ -1,0 +1,15 @@
+{
+  "name": "bible-search",
+  "version": "1.0.0",
+  "description": "Bible Search",
+  "main": "Gruntfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "1.0.1",
+    "grunt-contrib-concat": "1.0.1",
+    "grunt-contrib-cssmin": "1.0.2",
+    "grunt-contrib-uglify": "1.0.2",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-clean": "1.1.0"
+  }
+}

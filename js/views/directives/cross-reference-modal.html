@@ -1,0 +1,20 @@
+<div id="crossReferenceModal" ng-show="vm.isOpen">
+    <p>
+        <i ng-show="vm.isLoading">Finding Cross References...</i>
+        <i ng-show="!vm.isLoading">Found {{ vm.relatedVerses.length }} Cross References</i>
+        <span class="pull-right"><a href="" ng-click="vm.close()">[x] close</a></span>
+    </p>
+
+    <div ng-show="vm.isLoading">
+        Loading...
+    </div>
+
+    <div ng-show="!vm.isLoading" class="overflow clear">
+        <div class="well mb20 p15" ng-repeat="items in vm.relatedVerses" style="background-color: #f2f2f2;">
+            <div ng-repeat="relatedVerse in items">
+                <p ng-show="$first"><b>{{ relatedVerse.book.name }}</b> ({{ relatedVerse.book.testament }})</p>
+                <p><a title="Navigate To Verse" ui-sref="book({bookId: relatedVerse.book.id, chapterId: relatedVerse.chapterId, verseId: relatedVerse.id})"><b>{{ relatedVerse.chapterId }}:{{ relatedVerse.verseId }}</b></a> {{ relatedVerse.verse }}</p>
+            </div>
+        </div>
+    </div>
+</div>
