@@ -1,7 +1,6 @@
 # Bible AngularJS UI
 
 Bible AngularJS UI is an open source project that displays multiple translations of The Holy Bible and verse cross references. 
-All of the data was gathered from the MySQL database found [here](https://github.com/scrollmapper/bible_databases).
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 
 ### Included Translations
@@ -30,6 +29,9 @@ You should then be able to access [http://localhost:8082](http://localhost:8082)
 * [Bible PHP API](https://www.github.com/rkeplin/bible-php-api)
 * [Bible AngularJS UI](https://www.github.com/rkeplin/bible-angularjs-ui)
 * [Bible MariaDB Docker Image](https://www.github.com/rkeplin/bible-mariadb)
+
+### Credits
+All of the data was gathered from the MySQL database found [here](https://github.com/scrollmapper/bible_databases).
 
 ### License
 This program is free software: you can redistribute it and/or modify
