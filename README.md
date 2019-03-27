@@ -16,6 +16,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 ### Live Demo
 A live demo of this application can be viewed [here](https://bible-ui.rkeplin.com).
 
+[![alt text](https://raw.githubusercontent.com/rkeplin/bible-angularjs-ui/master/img/screenshot.png "Screenshot")](https://bible-ui.rkeplin.com)
+
 ### Getting Everything Running
 ```bash
 git clone https://www.github.com/rkeplin/bible-angularjs-ui
