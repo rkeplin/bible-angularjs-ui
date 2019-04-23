@@ -9,6 +9,13 @@ services:
       - .:/var/www/html
     networks:
       - net1
+    deploy:
+      replicas: 3
+      update_config:
+        paralellism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
 
   php-api:
     image: rkeplin/bible-php-api:latest
@@ -26,6 +33,13 @@ services:
       - DB_PASS=${BIBLE_DB_PASS}
     networks:
       - net1
+    deploy:
+      replicas: 3
+        update_config:
+          paralellism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
 
   bible-db:
     image: rkeplin/bible-mariadb:latest
@@ -39,6 +53,11 @@ services:
       - bible-db:/var/lib/mysql
     networks:
       - net1
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
 
 volumes:
   bible-db:
