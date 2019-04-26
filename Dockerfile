@@ -5,6 +5,7 @@ RUN dnf -y update \
  && dnf clean all
 
 RUN echo "ServerName localhost" >> /etc/httpd/conf/httpd.conf
+RUN sed -i 's/LogFormat "%h/LogFormat "%{X-Forwarded-For}i %h/g' /etc/httpd/conf/httpd.conf
 RUN apachectl configtest
 
 RUN ln -sf /dev/stdout /var/log/httpd/access_log \
