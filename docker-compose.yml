@@ -5,17 +5,13 @@ services:
     restart: always
     ports:
       - 8082:80
+    environment:
+      - URL=${URL}
+      - API_URL=${API_URL}
     volumes:
       - .:/var/www/html
     networks:
       - net1
-    deploy:
-      replicas: 3
-      update_config:
-        paralellism: 2
-        delay: 10s
-      restart_policy:
-        condition: on-failure
 
   php-api:
     image: rkeplin/bible-php-api:latest
@@ -25,6 +21,7 @@ services:
     depends_on:
       - bible-db
     environment:
+      - ALLOW_ORIGIN=${ALLOW_ORIGIN}
       - SERVER_ADMIN=${SERVER_ADMIN}
       - APP_ENV=${BIBLE_APP_ENV}
       - DB_NAME=${BIBLE_DB_NAME}
@@ -33,13 +30,6 @@ services:
       - DB_PASS=${BIBLE_DB_PASS}
     networks:
       - net1
-    deploy:
-      replicas: 3
-        update_config:
-          paralellism: 2
-          delay: 10s
-        restart_policy:
-          condition: on-failure
 
   bible-db:
     image: rkeplin/bible-mariadb:latest
@@ -53,11 +43,6 @@ services:
       - bible-db:/var/lib/mysql
     networks:
       - net1
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-      restart_policy:
-        condition: on-failure
 
 volumes:
   bible-db:

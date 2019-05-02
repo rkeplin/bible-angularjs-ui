@@ -6,13 +6,13 @@ RUN dnf -y update \
 
 RUN echo "ServerName localhost" >> /etc/httpd/conf/httpd.conf
 RUN sed -i 's/LogFormat "%h/LogFormat "%{X-Forwarded-For}i - %h/g' /etc/httpd/conf/httpd.conf
-RUN apachectl configtest
 
 RUN ln -sf /dev/stdout /var/log/httpd/access_log \
  && ln -sf /dev/stderr /var/log/httpd/error_log
 
 EXPOSE 80
 
+COPY .docker/docker-entrypoint.sh /docker-entrypoint.sh
 COPY .docker/local.conf /etc/httpd/conf.d/local.conf
 
 WORKDIR /var/www/html
@@ -24,4 +24,4 @@ COPY .htaccess .htaccess
 COPY favicon.png favicon.png
 COPY index.html index.html
 
-CMD /usr/sbin/httpd -D FOREGROUND
+ENTRYPOINT ["/docker-entrypoint.sh", "/usr/sbin/httpd", "-D", "FOREGROUND"]
