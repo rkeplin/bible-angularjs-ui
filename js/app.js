@@ -17,6 +17,12 @@ angular.module('app', ['ngRoute', 'ui.router', 'ngSanitize', 'ngCookies', 'app.c
                     templateUrl: '/js/views/controllers/book.html',
                     controller: 'BookController',
                     controllerAs: 'vm'
+                }).
+                state('home.search', {
+                    url: 'search/?query',
+                    templateUrl: '/js/views/controllers/search.html',
+                    controller: 'SearchController',
+                    controllerAs: 'vm'
                 });
 
             $locationProvider.html5Mode(true);

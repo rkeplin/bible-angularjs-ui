@@ -36,6 +36,14 @@
         var stateBookId = parseInt($stateParams.bookId),
             stateChapterId = parseInt($stateParams.chapterId);
 
+        if (!stateBookId) {
+            stateBookId = 1;
+        }
+
+        if (!stateChapterId) {
+            stateChapterId = 1;
+        }
+
         checkBtnState(stateBookId, stateChapterId);
 
         getBooks();
@@ -92,7 +100,8 @@
 
             $state.go('home.book', {
                 'bookId': book.id,
-                'chapterId': 1
+                'chapterId': 1,
+                'verseId': null
             });
         }
 
@@ -101,7 +110,8 @@
 
             $state.go('home.book', {
                 'bookId': vm.selected.book.id,
-                'chapterId': chapter.id
+                'chapterId': chapter.id,
+                'verseId': null
             });
         }
 
@@ -127,7 +137,8 @@
 
                         $state.go('home.book', {
                             'bookId': bookId,
-                            'chapterId': chapters.length
+                            'chapterId': chapters.length,
+                            'verseId': null
                         });
                     });
             } else {
@@ -138,7 +149,8 @@
 
                 $state.go('home.book', {
                     'bookId': bookId,
-                    'chapterId': chapterId
+                    'chapterId': chapterId,
+                    'verseId': null
                 });
             }
         }
@@ -172,7 +184,8 @@
 
             $state.go('home.book', {
                 'bookId': bookId,
-                'chapterId': chapterId
+                'chapterId': chapterId,
+                'verseId': null
             });
         }
 

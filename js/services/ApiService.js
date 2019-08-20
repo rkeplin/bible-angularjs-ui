@@ -11,7 +11,8 @@
             getBooks: getBooks,
             getChaptersFromBook: getChaptersFromBook,
             getMaxChapterFromBook: getMaxChapterFromBook,
-            getText: getText
+            getText: getText,
+            search: search
         };
 
         function getTranslations () {
@@ -51,6 +52,17 @@
             return _get('/books/' + bookId + '/chapters/' + chapterId, {
                 params: {
                     translation: translation
+                }
+            });
+        }
+
+        function search (query, translation, offset, limit) {
+            return _get('/search', {
+                params: {
+                    query: query,
+                    translation: translation,
+                    offset: offset,
+                    limit: limit
                 }
             });
         }

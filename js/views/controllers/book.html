@@ -1,9 +1,9 @@
 <div id="content" class="row">
     <div class="col-md-6">
-        <p ng-class="{ 'lightyellow': verse.highlight }" ng-repeat="verse in vm.versesLeft"><a title="View Cross References" href="" ng-click="vm.open('right', verse)"><b> {{ verse.chapterId }}:{{ verse.verseId }}</b></a> {{ verse.verse }}</p>
+        <p id="verse{{ verseL.verseId }}" ng-class="{ 'lightyellow': verseL.highlight }" ng-repeat="verseL in vm.versesLeft"><a title="View Cross References" href="" ng-click="vm.open('right', verseL)"><b> {{ verseL.chapterId }}:{{ verseL.verseId }}</b></a> {{ verseL.verse }}</p>
     </div>
     <div class="col-md-6">
-        <p ng-class="{ 'lightyellow': verse.highlight }" ng-repeat="verse in vm.versesRight"><a title="View Cross References" href="" ng-click="vm.open('left', verse)"><b> {{ verse.chapterId }}:{{ verse.verseId }}</b></a> {{ verse.verse }}</p>
+        <p id="verse{{ verseR.verseId }}" ng-class="{ 'lightyellow': verseR.highlight }" ng-repeat="verseR in vm.versesRight"><a title="View Cross References" href="" ng-click="vm.open('left', verseR)"><b> {{ verseR.chapterId }}:{{ verseR.verseId }}</b></a> {{ verseR.verse }}</p>
     </div>
 </div>
 

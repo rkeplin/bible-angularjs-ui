@@ -3,7 +3,11 @@ body {
     padding: 20px;
     min-height: 1000px;
 }
-
+h3 {
+    font-size: 25px;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
 /*
  * Utilities
  */
@@ -24,7 +28,7 @@ body {
 .clear {
     clear: both;
 }
-.lightyellow {
+.lightyellow, .highlight {
     background-color: lightyellow;
 }
 select {

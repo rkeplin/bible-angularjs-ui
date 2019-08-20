@@ -1,7 +1,7 @@
 (function (window) {
     window.__coreAppEnv = window.__env || {};
 
-    window.__coreAppEnv.URL                 = 'http://localhost:8082';
-    window.__coreAppEnv.API_URL             = 'http://localhost:8083';
+    window.__coreAppEnv.URL                 = 'http://bible-ui.rkeplin.local';
+    window.__coreAppEnv.API_URL             = 'http://bible-go-api.rkeplin.local/v1';
     window.__coreAppEnv.DEFAULT_TRANSLATION = 'KJV';
 }(this));

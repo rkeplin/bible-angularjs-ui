@@ -13,21 +13,21 @@ services:
     networks:
       - net1
 
-  php-api:
-    image: rkeplin/bible-php-api:latest
-    restart: always
+  go-api:
+    image: rkeplin/bible-go-api:latest
     ports:
-      - 8083:80
-    depends_on:
-      - bible-db
+      - 8084:3000
+    volumes:
+      - .:/go/src/github.com/rkeplin/bible-go-api
     environment:
-      - ALLOW_ORIGIN=${ALLOW_ORIGIN}
-      - SERVER_ADMIN=${SERVER_ADMIN}
-      - APP_ENV=${BIBLE_APP_ENV}
+      - ES_URL=${ES_URL}
       - DB_NAME=${BIBLE_DB_NAME}
       - DB_HOST=${BIBLE_DB_HOST}
       - DB_USER=${BIBLE_DB_USER}
       - DB_PASS=${BIBLE_DB_PASS}
+    depends_on:
+      - bible-db
+      - bible-es
     networks:
       - net1
 
@@ -41,6 +41,15 @@ services:
       - MYSQL_DATABASE=${BIBLE_DB_NAME}
     volumes:
       - bible-db:/var/lib/mysql
+    networks:
+      - net1
+
+  bible-es:
+    image: rkeplin/bible-es:latest
+    restart: always
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
     networks:
       - net1
 

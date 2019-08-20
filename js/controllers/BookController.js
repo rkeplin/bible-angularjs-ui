@@ -51,7 +51,7 @@
 
                         for (var i = 0; i < data.length; i++) {
                             if (verseId !== null) {
-                                if (data[i].id == verseId) {
+                                if (data[i].verseId == verseId) {
                                     data[i].highlight = true;
                                 }
                             }
@@ -63,6 +63,17 @@
                             }
 
                             vm.versesRight.push(data[i]);
+                        }
+                    })
+                    .then(function() {
+                        if (verseId != null) {
+                            setTimeout(function () {
+                                var elem = document.getElementById('verse' + verseId);
+
+                                elem.scrollIntoView();
+                                window.scroll(window.scrollX, window.scrollY - 75);
+
+                            }, 250);
                         }
                     });
             }
@@ -84,6 +95,8 @@
             }
 
             function open (placement, verse) {
+                console.log(verse);
+
                 var element = document.getElementById('crossReferenceModal');
 
                 element.style.left = null;

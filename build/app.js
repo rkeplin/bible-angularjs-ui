@@ -17,6 +17,12 @@ angular.module('app', ['ngRoute', 'ui.router', 'ngSanitize', 'ngCookies', 'app.c
                     templateUrl: '/js/views/controllers/book.html',
                     controller: 'BookController',
                     controllerAs: 'vm'
+                }).
+                state('home.search', {
+                    url: 'search/?query',
+                    templateUrl: '/js/views/controllers/search.html',
+                    controller: 'SearchController',
+                    controllerAs: 'vm'
                 });
 
             $locationProvider.html5Mode(true);
@@ -87,7 +93,7 @@ angular.module('app.core')
 
                         for (var i = 0; i < data.length; i++) {
                             if (verseId !== null) {
-                                if (data[i].id == verseId) {
+                                if (data[i].verseId == verseId) {
                                     data[i].highlight = true;
                                 }
                             }
@@ -99,6 +105,17 @@ angular.module('app.core')
                             }
 
                             vm.versesRight.push(data[i]);
+                        }
+                    })
+                    .then(function() {
+                        if (verseId != null) {
+                            setTimeout(function () {
+                                var elem = document.getElementById('verse' + verseId);
+
+                                elem.scrollIntoView();
+                                window.scroll(window.scrollX, window.scrollY - 75);
+
+                            }, 250);
                         }
                     });
             }
@@ -120,6 +137,8 @@ angular.module('app.core')
             }
 
             function open (placement, verse) {
+                console.log(verse);
+
                 var element = document.getElementById('crossReferenceModal');
 
                 element.style.left = null;
@@ -150,6 +169,69 @@ angular.module('app.core')
                 'bookId': 1,
                 'chapterId': 1
             }, {reload: true});
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .controller('SearchController', SearchController);
+
+    SearchController.$inject = ['$scope', '$state', '$stateParams', 'ApiService', 'TranslationStateService', 'SearchStateService'];
+
+    function SearchController ($scope, $state, $stateParams, ApiService, TranslationStateService, SearchStateService) {
+        var vm = this;
+        vm.query = $stateParams.query;
+        vm.isLoading = true;
+        vm.translation = TranslationStateService.getCurrent();
+        vm.result = {
+            total: 0,
+            items: []
+        };
+        vm.loadMore = loadMore;
+
+        var limit = 100,
+            offset = 0;
+
+        doSearch();
+
+        TranslationStateService.onChange(doSearch);
+
+        $scope.$on('$stateChangeStart', onStateChangeStart);
+
+        function doSearch () {
+            vm.translation = TranslationStateService.getCurrent();
+            vm.isLoading = true;
+
+            ApiService.search(vm.query, vm.translation, offset, limit).then(onSearch);
+        }
+
+        function loadMore () {
+            vm.isLoading = true;
+
+            offset = offset + limit;
+
+            ApiService.search(vm.query, vm.translation, offset, limit).then(onLoadMore);
+        }
+
+        function onStateChangeStart () {
+            TranslationStateService.clearOnChangeListeners();
+        }
+
+        function onSearch (result) {
+            offset = 0;
+
+            vm.result = result;
+            vm.isLoading = false;
+
+            SearchStateService.ready();
+        }
+
+        function onLoadMore (result) {
+            vm.result.items = vm.result.items.concat(result.items);
+            vm.isLoading = false;
         }
     }
 })();
@@ -191,6 +273,14 @@ angular.module('app.core')
 
         var stateBookId = parseInt($stateParams.bookId),
             stateChapterId = parseInt($stateParams.chapterId);
+
+        if (!stateBookId) {
+            stateBookId = 1;
+        }
+
+        if (!stateChapterId) {
+            stateChapterId = 1;
+        }
 
         checkBtnState(stateBookId, stateChapterId);
 
@@ -248,7 +338,8 @@ angular.module('app.core')
 
             $state.go('home.book', {
                 'bookId': book.id,
-                'chapterId': 1
+                'chapterId': 1,
+                'verseId': null
             });
         }
 
@@ -257,7 +348,8 @@ angular.module('app.core')
 
             $state.go('home.book', {
                 'bookId': vm.selected.book.id,
-                'chapterId': chapter.id
+                'chapterId': chapter.id,
+                'verseId': null
             });
         }
 
@@ -283,7 +375,8 @@ angular.module('app.core')
 
                         $state.go('home.book', {
                             'bookId': bookId,
-                            'chapterId': chapters.length
+                            'chapterId': chapters.length,
+                            'verseId': null
                         });
                     });
             } else {
@@ -294,7 +387,8 @@ angular.module('app.core')
 
                 $state.go('home.book', {
                     'bookId': bookId,
-                    'chapterId': chapterId
+                    'chapterId': chapterId,
+                    'verseId': null
                 });
             }
         }
@@ -328,7 +422,8 @@ angular.module('app.core')
 
             $state.go('home.book', {
                 'bookId': bookId,
-                'chapterId': chapterId
+                'chapterId': chapterId,
+                'verseId': null
             });
         }
 
@@ -438,6 +533,72 @@ angular.module('app.core')
     'use strict';
 
     angular.module('app.core')
+        .directive('searchInput', searchInput);
+
+    function searchInput () {
+        return {
+            restrict: 'E',
+            scope: {},
+            controller: ctrl,
+            controllerAs: 'vm',
+            bindToController: true,
+            templateUrl: '/js/views/directives/search-input.html'
+        };
+    }
+
+    ctrl.$inject = ['$transitions', '$state', '$stateParams', 'SearchStateService'];
+
+    function ctrl ($transitions, $state, $stateParams, SearchStateService) {
+        var vm = this;
+        vm.searchQuery = '';
+        vm.onSearch = onSearch;
+        vm.onKeyPress = onKeyPress;
+        vm.isLoading = false;
+
+        if ($stateParams.query) {
+            vm.searchQuery = $stateParams.query;
+        }
+
+        init();
+
+        function init () {
+            $transitions.onStart({}, onStartTransition);
+
+            SearchStateService.onReady(onReady);
+        }
+
+        function onKeyPress (event) {
+            var keyCode = event.which || event.keyCode;
+
+            if (keyCode === 13) {
+                onSearch(vm.searchQuery);
+            }
+        }
+
+        function onStartTransition (transition) {
+            vm.isLoading = true;
+
+            if (transition.to().name !== 'home.search') {
+                vm.isLoading = false;
+            }
+        }
+
+        function onReady () {
+            vm.isLoading = false;
+        }
+
+        function onSearch (searchQuery) {
+            $state.go('home.search', {
+                'query': searchQuery
+            });
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
         .directive('translationSelector', translationSelector);
 
     function translationSelector () {
@@ -466,7 +627,7 @@ angular.module('app.core')
             return ApiService.getTranslations()
                 .then(function(translations) {
                     for (var i = 0; i < translations.length; i++) {
-                        translations[i].name = translations[i].abbreviation + ' - ' + translations[i].version;
+                        translations[i].name = translations[i].abbreviation;
 
                         if (TranslationStateService.getCurrent() == translations[i].abbreviation) {
                             vm.selected.translation = translations[i];
@@ -497,7 +658,8 @@ angular.module('app.core')
             getBooks: getBooks,
             getChaptersFromBook: getChaptersFromBook,
             getMaxChapterFromBook: getMaxChapterFromBook,
-            getText: getText
+            getText: getText,
+            search: search
         };
 
         function getTranslations () {
@@ -537,6 +699,17 @@ angular.module('app.core')
             return _get('/books/' + bookId + '/chapters/' + chapterId, {
                 params: {
                     translation: translation
+                }
+            });
+        }
+
+        function search (query, translation, offset, limit) {
+            return _get('/search', {
+                params: {
+                    query: query,
+                    translation: translation,
+                    offset: offset,
+                    limit: limit
                 }
             });
         }
@@ -633,6 +806,37 @@ angular.module('app.core')
 
         function onClose(callback) {
             closeFn = callback;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .service('SearchStateService', SearchStateService);
+
+    function SearchStateService () {
+        var subscriptionFn;
+
+        return {
+            onReady: onReady,
+            unsubscribe: unsubscribe,
+            ready: ready
+        };
+
+        function onReady (fn) {
+            subscriptionFn = fn;
+        }
+
+        function unsubscribe () {
+            subscriptionFn = null;
+        }
+
+        function ready () {
+            if (subscriptionFn != null) {
+                subscriptionFn();
+            }
         }
     }
 })();

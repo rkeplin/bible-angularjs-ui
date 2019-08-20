@@ -30,7 +30,7 @@
             return ApiService.getTranslations()
                 .then(function(translations) {
                     for (var i = 0; i < translations.length; i++) {
-                        translations[i].name = translations[i].abbreviation + ' - ' + translations[i].version;
+                        translations[i].name = translations[i].abbreviation;
 
                         if (TranslationStateService.getCurrent() == translations[i].abbreviation) {
                             vm.selected.translation = translations[i];

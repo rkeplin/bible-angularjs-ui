@@ -8,7 +8,7 @@ A live demo of this application can be viewed [here](https://bible-ui.rkeplin.co
 
 [![alt text](https://raw.githubusercontent.com/rkeplin/bible-angularjs-ui/master/img/screenshot.png "Screenshot")](https://bible-ui.rkeplin.com)
 
-### Getting Everything Running
+### Getting Everything Running 
 ```bash
 git clone https://www.github.com/rkeplin/bible-angularjs-ui
 cd bible-angularjs-ui && docker-compose up -d

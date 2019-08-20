@@ -1,0 +1,15 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <input name="searchInput"
+                   id="searchInput"
+                   ng-model="vm.searchQuery"
+                   ng-keypress="vm.onKeyPress($event)"
+                   style="width: 200px;">
+            </input>
+
+            <button ng-disabled="vm.isLoading" ng-click="vm.onSearch(vm.searchQuery)" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+
+</div>

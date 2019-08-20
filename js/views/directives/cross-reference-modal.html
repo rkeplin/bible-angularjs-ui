@@ -12,8 +12,8 @@
     <div ng-show="!vm.isLoading" class="overflow clear">
         <div class="well mb20 p15" ng-repeat="items in vm.relatedVerses" style="background-color: #f2f2f2;">
             <div ng-repeat="relatedVerse in items">
-                <p ng-show="$first"><b>{{ relatedVerse.book.name }}</b> ({{ relatedVerse.book.testament }})</p>
-                <p><a title="Navigate To Verse" ui-sref="book({bookId: relatedVerse.book.id, chapterId: relatedVerse.chapterId, verseId: relatedVerse.id})"><b>{{ relatedVerse.chapterId }}:{{ relatedVerse.verseId }}</b></a> {{ relatedVerse.verse }}</p>
+                <p ng-show="$first"><b>{{ relatedVerse.book.name }}</b> - <i>{{ relatedVerse.book.testament }}</i></p>
+                <p><b>{{ relatedVerse.chapterId }}:{{ relatedVerse.verseId }}</b> {{ relatedVerse.verse }}</p>
             </div>
         </div>
     </div>
