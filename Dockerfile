@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM fedora:30
 
 RUN dnf -y update \
  && dnf -y install httpd npm at wget \

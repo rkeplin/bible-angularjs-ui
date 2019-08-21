@@ -1,0 +1,29 @@
+sudo: required
+services:
+  - docker
+
+env:
+  COMPOSE_VERSION: 1.17.1
+
+before_install:
+ - curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+ - chmod +x docker-compose
+ - sudo mv docker-compose /usr/local/bin
+
+script:
+  - make up
+  - make all
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker build -t rkeplin/bible-angularjs-ui:$TRAVIS_BUILD_NUMBER .
+  - docker build -t rkeplin/bible-angularjs-ui:latest .
+  - docker push rkeplin/bible-angularjs-ui:$TRAVIS_BUILD_NUMBER
+  - docker push rkeplin/bible-angularjs-ui:latest
+  - git checkout -- .
+
+deploy:
+  provider: script
+  script: bash $(pwd)/.deploy/deploy.sh
+  on:
+    branch: master
