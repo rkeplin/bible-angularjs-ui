@@ -12,7 +12,6 @@ before_install:
 
 script:
   - make up
-  - make all
 
 after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
