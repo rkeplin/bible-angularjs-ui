@@ -1,13 +1,20 @@
 <div id="topnav">
-    <div class="pull-left">
-        <search-input></search-input>
-    </div>
-    <div class="pull-left">
-        <book-selector class=""></book-selector>
+    <div class="pull-left" style="margin-left: 400px;">
+        <svg class="toggle-leftnav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30" focusable="false"><title>Menu</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"></path></svg>
     </div>
     <div class="pull-right">
         <translation-selector></translation-selector>
     </div>
 </div>
 
-<div ui-view></div>
+<div class="left-nav">
+    <div class="p-4">
+        <book-selector class=""></book-selector>
+
+        <h4 class="mt-3 mb-2">Keyword Search</h4>
+        <search-input></search-input>
+    </div>
+</div>
+<div class="main">
+    <div ui-view></div>
+</div>

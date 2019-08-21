@@ -1,13 +1,15 @@
-<div>
+<div class="search-widget">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-8 pr-1">
             <input name="searchInput"
                    id="searchInput"
                    ng-model="vm.searchQuery"
-                   ng-keypress="vm.onKeyPress($event)"
-                   style="width: 200px;">
+                   placeholder="Enter Search..."
+                   ng-keypress="vm.onKeyPress($event)">
             </input>
+        </div>
 
+        <div class="col-4 pl-1">
             <button ng-disabled="vm.isLoading" ng-click="vm.onSearch(vm.searchQuery)" class="btn btn-primary">Search</button>
         </div>
     </div>
