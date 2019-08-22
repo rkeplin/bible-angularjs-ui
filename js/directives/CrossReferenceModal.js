@@ -15,9 +15,9 @@
         }
     }
 
-    ctrl.$inject = ['$scope', 'ApiService', 'ModalStateService', 'TranslationStateService'];
+    ctrl.$inject = ['$scope', '$transitions', 'ApiService', 'ModalStateService', 'TranslationStateService'];
 
-    function ctrl ($scope, ApiService, ModalStateService, TranslationStateService) {
+    function ctrl ($scope, $transitions, ApiService, ModalStateService, TranslationStateService) {
         var vm = this;
         vm.verse = {};
         vm.relatedVerses = [];
@@ -26,13 +26,15 @@
 
         var currentVerse = null;
 
-        TranslationStateService.onChange(function () {
+        TranslationStateService.onChange('crossRef', function () {
             if (!vm.isOpen) {
                 return false;
             }
 
             init();
         });
+
+        $transitions.onStart({}, onStartTransition);
 
         ModalStateService.onOpen(function(verse) {
             if (currentVerse !== null) {
@@ -60,6 +62,11 @@
 
                     document.getElementById('crossReferenceModal').scrollTop = 0;
                 });
+        }
+
+        function onStartTransition () {
+            TranslationStateService.onChange('crossRef', null);
+            ModalStateService.clear();
         }
 
         function close () {

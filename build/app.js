@@ -46,9 +46,9 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('BookController', BookController);
 
-        BookController.$inject = ['$scope', '$state', '$stateParams', 'ApiService', 'ModalStateService', 'TranslationStateService', 'BookSelectorStateService'];
+        BookController.$inject = ['$scope', '$transitions', '$state', '$stateParams', 'ApiService', 'ModalStateService', 'TranslationStateService', 'BookSelectorStateService', 'TitleStateService'];
 
-        function BookController ($scope, $state, $stateParams, ApiService, ModalStateService, TranslationStateService, BookSelectorStateService) {
+        function BookController ($scope, $transitions, $state, $stateParams, ApiService, ModalStateService, TranslationStateService, BookSelectorStateService, TitleStateService) {
             var vm = this;
             vm.book = {};
             vm.versesLeft = [];
@@ -71,9 +71,9 @@ angular.module('app.core')
                 verseId = $stateParams.verseId;
             }
 
-            TranslationStateService.clearOnChangeListeners();
+            $transitions.onStart({}, onStartTransition);
 
-            TranslationStateService.onChange(function() {
+            TranslationStateService.onChange('book', function() {
                 init();
             });
 
@@ -90,6 +90,10 @@ angular.module('app.core')
                         vm.versesRight = [];
 
                         vm.book = data[0].book;
+
+                        var testament = (vm.book.testament == 'OT') ? 'Old Testament' : 'New Testament';
+
+                        TitleStateService.change('<b>' + vm.book.name + '</b><span class="hide-xs"> - <i>' + testament + '</i></span>');
 
                         for (var i = 0; i < data.length; i++) {
                             if (verseId !== null) {
@@ -120,6 +124,10 @@ angular.module('app.core')
                     });
             }
 
+            function onStartTransition () {
+                TranslationStateService.onChange('book', null);
+            }
+
             function onKeyDownEvent (e) {
                 if (e.keyCode === 27) {
                     ModalStateService.close();
@@ -148,6 +156,16 @@ angular.module('app.core')
                     element.style.right = 0;
                 }
 
+                var verses = vm.versesLeft.concat(vm.versesRight);
+
+                for (var i = 0; i < verses.length; i++) {
+                    if (verses[i].hasOwnProperty('highlight')) {
+                        verses[i].highlight = false;
+
+                        break;
+                    }
+                }
+
                 ModalStateService.open(verse);
             }
         }
@@ -159,21 +177,47 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state', 'SearchStateService', 'ModalStateService'];
+    HomeController.$inject = ['$state', '$transitions', 'SearchStateService', 'ModalStateService', 'TitleStateService'];
 
-    function HomeController ($state, SearchStateService, ModalStateService) {
+    function HomeController ($state, $transitions, SearchStateService, ModalStateService, TitleStateService) {
         var vm = this;
         vm.navIsOpen = false;
+        vm.title = 'Loading...';
         vm.onToggleLeftNav = onToggleLeftNav;
 
-        SearchStateService.onReady(closeNavigation);
+        SearchStateService.onReady(onSearchResults);
+        TitleStateService.onChange(onTitleChange);
         ModalStateService.onOpen(closeNavigation);
+
+        $transitions.onSuccess({}, onSuccessTransition);
+
+        if (!isMobile()) {
+            vm.navIsOpen = true;
+        }
 
         if ($state.$current.name === 'home') {
             $state.go('home.book', {
                 'bookId': 1,
                 'chapterId': 1
             }, {reload: true});
+        }
+
+        function onSuccessTransition (transition) {
+            if (transition.to().name == 'home.book') {
+                ModalStateService.onOpen(closeNavigation);
+            }
+        }
+
+        function onTitleChange (value) {
+            vm.title = value;
+        }
+
+        function onSearchResults () {
+            if (!isMobile()) {
+                return;
+            }
+
+            closeNavigation();
         }
 
         function closeNavigation () {
@@ -192,8 +236,12 @@ angular.module('app.core')
             }
         }
 
+        function isMobile() {
+            return (window.innerWidth <= 635);
+        }
+
         function enableMobileScrolling () {
-            if (window.innerWidth > 635) {
+            if (!isMobile()) {
                 return;
             }
 
@@ -202,7 +250,7 @@ angular.module('app.core')
         }
 
         function disableMobileScrolling () {
-            if (window.innerWidth > 635) {
+            if (!isMobile()) {
                 return;
             }
 
@@ -218,33 +266,42 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('SearchController', SearchController);
 
-    SearchController.$inject = ['$scope', '$state', '$stateParams', 'ApiService', 'TranslationStateService', 'SearchStateService'];
+    SearchController.$inject = ['$scope', '$transitions', '$state', '$stateParams', 'ApiService', 'TranslationStateService', 'SearchStateService', 'TitleStateService'];
 
-    function SearchController ($scope, $state, $stateParams, ApiService, TranslationStateService, SearchStateService) {
+    function SearchController ($scope, $transitions, $state, $stateParams, ApiService, TranslationStateService, SearchStateService, TitleStateService) {
         var vm = this;
         vm.query = $stateParams.query;
         vm.isLoading = true;
-        vm.translation = TranslationStateService.getCurrent();
         vm.result = {
             total: 0,
             items: []
         };
         vm.loadMore = loadMore;
 
-        var limit = 100,
+        var translation = TranslationStateService.getCurrent(),
+            limit = 100,
             offset = 0;
 
         doSearch();
 
-        TranslationStateService.onChange(doSearch);
+        TranslationStateService.onChange('search', function (obj) {
+            translation = obj.abbreviation;
 
-        $scope.$on('$stateChangeStart', onStateChangeStart);
+            doSearch()
+        });
+
+        $transitions.onStart({}, onStartTransition);
+
+        function onStartTransition () {
+            TranslationStateService.onChange('search', null);
+        }
 
         function doSearch () {
-            vm.translation = TranslationStateService.getCurrent();
+            TitleStateService.change('Searching...');
+
             vm.isLoading = true;
 
-            ApiService.search(vm.query, vm.translation, offset, limit).then(onSearch);
+            ApiService.search(vm.query, translation, offset, limit).then(onSearch);
         }
 
         function loadMore () {
@@ -252,11 +309,7 @@ angular.module('app.core')
 
             offset = offset + limit;
 
-            ApiService.search(vm.query, vm.translation, offset, limit).then(onLoadMore);
-        }
-
-        function onStateChangeStart () {
-            TranslationStateService.clearOnChangeListeners();
+            ApiService.search(vm.query, translation, offset, limit).then(onLoadMore);
         }
 
         function onSearch (result) {
@@ -267,6 +320,7 @@ angular.module('app.core')
             vm.result = result;
             vm.isLoading = false;
 
+            TitleStateService.change('<b>Found ' + vm.result.total + ' Results</b><span class="hide-xs"> - <i>In ' + translation + '</i></span>');
             SearchStateService.ready();
         }
 
@@ -345,16 +399,6 @@ angular.module('app.core')
 
         function getBooks () {
             return ApiService.getBooks().then(function(books) {
-                var tag = '(OT)';
-
-                for (var i = 0; i < books.length; i++) {
-                    if (i >= 39) {
-                        tag = '(NT)';
-                    }
-
-                    books[i].name = books[i].name + ' ' + tag;
-                }
-
                 vm.books = books;
                 setSelectedBook(stateBookId);
 
@@ -519,9 +563,9 @@ angular.module('app.core')
         }
     }
 
-    ctrl.$inject = ['$scope', 'ApiService', 'ModalStateService', 'TranslationStateService'];
+    ctrl.$inject = ['$scope', '$transitions', 'ApiService', 'ModalStateService', 'TranslationStateService'];
 
-    function ctrl ($scope, ApiService, ModalStateService, TranslationStateService) {
+    function ctrl ($scope, $transitions, ApiService, ModalStateService, TranslationStateService) {
         var vm = this;
         vm.verse = {};
         vm.relatedVerses = [];
@@ -530,13 +574,15 @@ angular.module('app.core')
 
         var currentVerse = null;
 
-        TranslationStateService.onChange(function () {
+        TranslationStateService.onChange('crossRef', function () {
             if (!vm.isOpen) {
                 return false;
             }
 
             init();
         });
+
+        $transitions.onStart({}, onStartTransition);
 
         ModalStateService.onOpen(function(verse) {
             if (currentVerse !== null) {
@@ -564,6 +610,11 @@ angular.module('app.core')
 
                     document.getElementById('crossReferenceModal').scrollTop = 0;
                 });
+        }
+
+        function onStartTransition () {
+            TranslationStateService.onChange('crossRef', null);
+            ModalStateService.clear();
         }
 
         function close () {
@@ -826,8 +877,13 @@ angular.module('app.core')
             open: open,
             onOpen: onOpen,
             close: close,
-            onClose: onClose
+            onClose: onClose,
+            clear: clear
         };
+
+        function clear () {
+            openFns = [];
+        }
 
         function open (verseId) {
             if (openFns.length === 0) {
@@ -896,10 +952,38 @@ angular.module('app.core')
     'use strict';
 
     angular.module('app.core')
+        .service('TitleStateService', TitleStateService);
+
+    function TitleStateService () {
+        var changeFn = null;
+
+        return {
+            change: change,
+            onChange: onChange
+        };
+
+        function change (value) {
+            if (changeFn == null) {
+                return false;
+            }
+
+            changeFn(value);
+        }
+
+        function onChange(callback) {
+            changeFn = callback;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
         .service('TranslationStateService', ['$cookies', 'DEFAULT_TRANSLATION', TranslationStateService]);
 
     function TranslationStateService ($cookies, DEFAULT_TRANSLATION) {
-        var changeFns = [];
+        var changeFns = {};
 
         if (typeof $cookies.get('translation') === 'undefined') {
             $cookies.put('translation', DEFAULT_TRANSLATION);
@@ -908,28 +992,25 @@ angular.module('app.core')
         return {
             change: change,
             onChange: onChange,
-            getCurrent: getCurrent,
-            clearOnChangeListeners: clearOnChangeListeners
+            getCurrent: getCurrent
         };
 
         function change (translation) {
             $cookies.put('translation', translation.abbreviation);
 
-            for (var i = 0; i < changeFns.length; i++) {
-                changeFns[i](translation);
+            for (var key in changeFns) {
+                if (changeFns.hasOwnProperty(key) && changeFns[key] != null) {
+                    changeFns[key](translation);
+                }
             }
         }
 
-        function onChange (callback) {
-            changeFns.push(callback);
+        function onChange (key, callback) {
+            changeFns[key] = callback;
         }
 
         function getCurrent () {
             return $cookies.get('translation');
-        }
-
-        function clearOnChangeListeners () {
-            changeFns = [];
         }
     }
 })();

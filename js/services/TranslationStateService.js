@@ -5,7 +5,7 @@
         .service('TranslationStateService', ['$cookies', 'DEFAULT_TRANSLATION', TranslationStateService]);
 
     function TranslationStateService ($cookies, DEFAULT_TRANSLATION) {
-        var changeFns = [];
+        var changeFns = {};
 
         if (typeof $cookies.get('translation') === 'undefined') {
             $cookies.put('translation', DEFAULT_TRANSLATION);
@@ -14,28 +14,25 @@
         return {
             change: change,
             onChange: onChange,
-            getCurrent: getCurrent,
-            clearOnChangeListeners: clearOnChangeListeners
+            getCurrent: getCurrent
         };
 
         function change (translation) {
             $cookies.put('translation', translation.abbreviation);
 
-            for (var i = 0; i < changeFns.length; i++) {
-                changeFns[i](translation);
+            for (var key in changeFns) {
+                if (changeFns.hasOwnProperty(key) && changeFns[key] != null) {
+                    changeFns[key](translation);
+                }
             }
         }
 
-        function onChange (callback) {
-            changeFns.push(callback);
+        function onChange (key, callback) {
+            changeFns[key] = callback;
         }
 
         function getCurrent () {
             return $cookies.get('translation');
-        }
-
-        function clearOnChangeListeners () {
-            changeFns = [];
         }
     }
 })();

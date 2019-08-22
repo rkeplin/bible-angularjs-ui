@@ -4,21 +4,47 @@
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state', 'SearchStateService', 'ModalStateService'];
+    HomeController.$inject = ['$state', '$transitions', 'SearchStateService', 'ModalStateService', 'TitleStateService'];
 
-    function HomeController ($state, SearchStateService, ModalStateService) {
+    function HomeController ($state, $transitions, SearchStateService, ModalStateService, TitleStateService) {
         var vm = this;
         vm.navIsOpen = false;
+        vm.title = 'Loading...';
         vm.onToggleLeftNav = onToggleLeftNav;
 
-        SearchStateService.onReady(closeNavigation);
+        SearchStateService.onReady(onSearchResults);
+        TitleStateService.onChange(onTitleChange);
         ModalStateService.onOpen(closeNavigation);
+
+        $transitions.onSuccess({}, onSuccessTransition);
+
+        if (!isMobile()) {
+            vm.navIsOpen = true;
+        }
 
         if ($state.$current.name === 'home') {
             $state.go('home.book', {
                 'bookId': 1,
                 'chapterId': 1
             }, {reload: true});
+        }
+
+        function onSuccessTransition (transition) {
+            if (transition.to().name == 'home.book') {
+                ModalStateService.onOpen(closeNavigation);
+            }
+        }
+
+        function onTitleChange (value) {
+            vm.title = value;
+        }
+
+        function onSearchResults () {
+            if (!isMobile()) {
+                return;
+            }
+
+            closeNavigation();
         }
 
         function closeNavigation () {
@@ -37,8 +63,12 @@
             }
         }
 
+        function isMobile() {
+            return (window.innerWidth <= 635);
+        }
+
         function enableMobileScrolling () {
-            if (window.innerWidth > 635) {
+            if (!isMobile()) {
                 return;
             }
 
@@ -47,7 +77,7 @@
         }
 
         function disableMobileScrolling () {
-            if (window.innerWidth > 635) {
+            if (!isMobile()) {
                 return;
             }
 

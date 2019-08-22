@@ -12,8 +12,13 @@
             open: open,
             onOpen: onOpen,
             close: close,
-            onClose: onClose
+            onClose: onClose,
+            clear: clear
         };
+
+        function clear () {
+            openFns = [];
+        }
 
         function open (verseId) {
             if (openFns.length === 0) {

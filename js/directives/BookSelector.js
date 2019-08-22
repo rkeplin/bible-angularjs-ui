@@ -66,16 +66,6 @@
 
         function getBooks () {
             return ApiService.getBooks().then(function(books) {
-                var tag = '(OT)';
-
-                for (var i = 0; i < books.length; i++) {
-                    if (i >= 39) {
-                        tag = '(NT)';
-                    }
-
-                    books[i].name = books[i].name + ' ' + tag;
-                }
-
                 vm.books = books;
                 setSelectedBook(stateBookId);
 

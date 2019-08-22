@@ -8,6 +8,10 @@ h3 {
     padding: 20px;
     min-height: 1000px;
 }
+#main.nav-open {
+    margin-left: 400px;
+    transition: 0.25s;
+}
 #left-nav {
     height: 100%;
     background-color: #f2f2f2;
@@ -27,6 +31,7 @@ h3 {
 }
 
 #left-nav.nav-open {
+    box-shadow: 1px 0 10px #888;
     left: 0px;
     transition: 0.25s;
 }
@@ -124,6 +129,11 @@ select {
     padding: 15px 20px;
     z-index: 1;
 }
+#topnav .title h2 {
+    color: white;
+    font-weight: normal;
+    font-size: 25px;
+}
 #content {
     margin-top: 75px;
     min-height: 100%;
@@ -141,13 +151,27 @@ select {
     padding-bottom:100px;
     overflow-y: auto;
 }
+.translation-widget select {
+    position: fixed;
+    width: 80px;
+    right: 20px;
+    top: 16px;
+}
 /* Responsive */
 @media screen and (max-width: 635px) {
+    #topnav .title h2 {
+        font-size: 17px;
+        line-height: 28px;
+    }
+    #topnav.nav-open .title {
+        display: none;
+    }
     #topnav.nav-open .translation-widget {
         display: none;
     }
     #left-nav.nav-open {
         width: 82%;
+        height: 120%;
     }
     #main.pl-5 {
         padding-left: 2rem!important;
@@ -158,11 +182,23 @@ select {
     #topnav.nav-open #toggler {
         float: right;
     }
-    /*.book-selector-widget button {*/
-        /*display: none;*/
-    /*}*/
+    #main.nav-open {
+        margin-left: 0;
+        transition: none;
+    }
     #left-nav .mt-5 {
         margin-top: 1rem!important;
+    }
+}
+@media screen and (max-width: 438px) {
+    .hide-xs {
+        display: none;
+    }
+}
+@media screen and (max-width: 998px) {
+    #topnav.nav-open .title h2 {
+        font-size: 17px;
+        line-height: 28px;
     }
 }
 @media screen and (max-width: 767px) {

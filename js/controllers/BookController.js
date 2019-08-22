@@ -4,9 +4,9 @@
     angular.module('app.core')
         .controller('BookController', BookController);
 
-        BookController.$inject = ['$scope', '$state', '$stateParams', 'ApiService', 'ModalStateService', 'TranslationStateService', 'BookSelectorStateService'];
+        BookController.$inject = ['$scope', '$transitions', '$state', '$stateParams', 'ApiService', 'ModalStateService', 'TranslationStateService', 'BookSelectorStateService', 'TitleStateService'];
 
-        function BookController ($scope, $state, $stateParams, ApiService, ModalStateService, TranslationStateService, BookSelectorStateService) {
+        function BookController ($scope, $transitions, $state, $stateParams, ApiService, ModalStateService, TranslationStateService, BookSelectorStateService, TitleStateService) {
             var vm = this;
             vm.book = {};
             vm.versesLeft = [];
@@ -29,9 +29,9 @@
                 verseId = $stateParams.verseId;
             }
 
-            TranslationStateService.clearOnChangeListeners();
+            $transitions.onStart({}, onStartTransition);
 
-            TranslationStateService.onChange(function() {
+            TranslationStateService.onChange('book', function() {
                 init();
             });
 
@@ -48,6 +48,10 @@
                         vm.versesRight = [];
 
                         vm.book = data[0].book;
+
+                        var testament = (vm.book.testament == 'OT') ? 'Old Testament' : 'New Testament';
+
+                        TitleStateService.change('<b>' + vm.book.name + '</b><span class="hide-xs"> - <i>' + testament + '</i></span>');
 
                         for (var i = 0; i < data.length; i++) {
                             if (verseId !== null) {
@@ -78,6 +82,10 @@
                     });
             }
 
+            function onStartTransition () {
+                TranslationStateService.onChange('book', null);
+            }
+
             function onKeyDownEvent (e) {
                 if (e.keyCode === 27) {
                     ModalStateService.close();
@@ -104,6 +112,16 @@
                     element.style.left = 0;
                 } else {
                     element.style.right = 0;
+                }
+
+                var verses = vm.versesLeft.concat(vm.versesRight);
+
+                for (var i = 0; i < verses.length; i++) {
+                    if (verses[i].hasOwnProperty('highlight')) {
+                        verses[i].highlight = false;
+
+                        break;
+                    }
                 }
 
                 ModalStateService.open(verse);

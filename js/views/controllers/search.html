@@ -1,26 +1,19 @@
-<div id="content">
-    <h3>
-        <span ng-show="!vm.isLoading">Found {{ vm.result.total }} <ng-pluralize count="vm.result.total" when="{'1': 'Result', 'other': 'Results'}"></ng-pluralize> In {{ vm.translation }}</span>
-        <span ng-show="vm.isLoading">Searching...</span>
-    </h3>
+<div class="row">
+    <div class="col-md-6" ng-repeat="item in vm.result.items">
+        <div class="well mb20 p15 search-result">
+            <p>
+                <b>
+                    <a title="Navigate To Verse" ui-sref="home.book({bookId: item.book.id, chapterId: item.chapterId, verseId: item.verseId})">{{ item.book.name }} {{ item.chapterId }}:{{ item.verseId }}</a>
+                </b>
+                -
+                <i>{{ item.book.testament }}</i>
+            </p>
 
-    <div class="row">
-        <div class="col-md-6" ng-repeat="item in vm.result.items">
-            <div class="well mb20 p15 search-result">
-                <p>
-                    <b>
-                        <a title="Navigate To Verse" ui-sref="home.book({bookId: item.book.id, chapterId: item.chapterId, verseId: item.verseId})">{{ item.book.name }} {{ item.chapterId }}:{{ item.verseId }}</a>
-                    </b>
-                    -
-                    <i>{{ item.book.testament }}</i>
-                </p>
-
-                <p ng-bind-html="item.verse"></p>
-            </div>
+            <p ng-bind-html="item.verse"></p>
         </div>
     </div>
+</div>
 
-    <div style="text-align: center;">
-        <button ng-show="vm.result.total > vm.result.items.length" ng-disabled="vm.isLoading" ng-click="vm.loadMore()" class="btn btn-primary">Load More</button>
-    </div>
+<div style="text-align: center;">
+    <button ng-show="vm.result.total > vm.result.items.length" ng-disabled="vm.isLoading" ng-click="vm.loadMore()" class="btn btn-primary">Load More</button>
 </div>

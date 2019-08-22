@@ -1,9 +1,4 @@
-<div id="content" class="row">
-    <div class="col-md-12">
-        <h3>
-            {{ vm.book.name }}
-        </h3>
-    </div>
+<div class="row">
     <div class="col-md-6">
         <p id="verse{{ verseL.verseId }}" ng-class="{ 'lightyellow': verseL.highlight }" ng-repeat="verseL in vm.versesLeft"><a title="View Cross References" href="" ng-click="vm.open('right', verseL)"><b> {{ verseL.chapterId }}:{{ verseL.verseId }}</b></a> {{ verseL.verse }}</p>
     </div>

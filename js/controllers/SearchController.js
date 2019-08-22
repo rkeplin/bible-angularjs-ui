@@ -4,33 +4,42 @@
     angular.module('app.core')
         .controller('SearchController', SearchController);
 
-    SearchController.$inject = ['$scope', '$state', '$stateParams', 'ApiService', 'TranslationStateService', 'SearchStateService'];
+    SearchController.$inject = ['$scope', '$transitions', '$state', '$stateParams', 'ApiService', 'TranslationStateService', 'SearchStateService', 'TitleStateService'];
 
-    function SearchController ($scope, $state, $stateParams, ApiService, TranslationStateService, SearchStateService) {
+    function SearchController ($scope, $transitions, $state, $stateParams, ApiService, TranslationStateService, SearchStateService, TitleStateService) {
         var vm = this;
         vm.query = $stateParams.query;
         vm.isLoading = true;
-        vm.translation = TranslationStateService.getCurrent();
         vm.result = {
             total: 0,
             items: []
         };
         vm.loadMore = loadMore;
 
-        var limit = 100,
+        var translation = TranslationStateService.getCurrent(),
+            limit = 100,
             offset = 0;
 
         doSearch();
 
-        TranslationStateService.onChange(doSearch);
+        TranslationStateService.onChange('search', function (obj) {
+            translation = obj.abbreviation;
 
-        $scope.$on('$stateChangeStart', onStateChangeStart);
+            doSearch()
+        });
+
+        $transitions.onStart({}, onStartTransition);
+
+        function onStartTransition () {
+            TranslationStateService.onChange('search', null);
+        }
 
         function doSearch () {
-            vm.translation = TranslationStateService.getCurrent();
+            TitleStateService.change('Searching...');
+
             vm.isLoading = true;
 
-            ApiService.search(vm.query, vm.translation, offset, limit).then(onSearch);
+            ApiService.search(vm.query, translation, offset, limit).then(onSearch);
         }
 
         function loadMore () {
@@ -38,11 +47,7 @@
 
             offset = offset + limit;
 
-            ApiService.search(vm.query, vm.translation, offset, limit).then(onLoadMore);
-        }
-
-        function onStateChangeStart () {
-            TranslationStateService.clearOnChangeListeners();
+            ApiService.search(vm.query, translation, offset, limit).then(onLoadMore);
         }
 
         function onSearch (result) {
@@ -53,6 +58,7 @@
             vm.result = result;
             vm.isLoading = false;
 
+            TitleStateService.change('<b>Found ' + vm.result.total + ' Results</b><span class="hide-xs"> - <i>In ' + translation + '</i></span>');
             SearchStateService.ready();
         }
 
