@@ -166,8 +166,8 @@ angular.module('app.core')
         vm.navIsOpen = false;
         vm.onToggleLeftNav = onToggleLeftNav;
 
-        SearchStateService.onReady(onSearchResults);
-        ModalStateService.onOpen(onOpenCrossReferenceModal);
+        SearchStateService.onReady(closeNavigation);
+        ModalStateService.onOpen(closeNavigation);
 
         if ($state.$current.name === 'home') {
             $state.go('home.book', {
@@ -176,16 +176,38 @@ angular.module('app.core')
             }, {reload: true});
         }
 
-        function onOpenCrossReferenceModal () {
+        function closeNavigation () {
             vm.navIsOpen = false;
-        }
 
-        function onSearchResults () {
-            vm.navIsOpen = false;
+            enableMobileScrolling();
         }
 
         function onToggleLeftNav() {
             vm.navIsOpen = !vm.navIsOpen;
+
+            if (vm.navIsOpen) {
+                disableMobileScrolling();
+            } else {
+                enableMobileScrolling();
+            }
+        }
+
+        function enableMobileScrolling () {
+            if (window.innerWidth > 635) {
+                return;
+            }
+
+            var elem = document.querySelector('body');
+            elem.style.overflow = 'initial';
+        }
+
+        function disableMobileScrolling () {
+            if (window.innerWidth > 635) {
+                return;
+            }
+
+            var elem = document.querySelector('body');
+            elem.style.overflow = 'hidden';
         }
     }
 })();
