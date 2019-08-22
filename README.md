@@ -1,5 +1,7 @@
 # Bible AngularJS UI
 
+[![Build Status](https://travis-ci.org/rkeplin/bible-angularjs-ui.svg?branch=master)](https://travis-ci.org/rkeplin/bible-angularjs-ui)
+
 Bible AngularJS UI is an open source project that displays multiple translations of The Holy Bible and verse cross references. 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 
