@@ -35,8 +35,6 @@
         });
 
         ModalStateService.onOpen(function(verse) {
-            window.scroll(0, 0);
-
             if (currentVerse !== null) {
                 currentVerse.highlight = false;
             }
@@ -59,6 +57,8 @@
                 .then(function(data) {
                     vm.relatedVerses = data;
                     vm.isLoading = false;
+
+                    document.getElementById('crossReferenceModal').scrollTop = 0;
                 });
         }
 

@@ -5,7 +5,7 @@
         .service('ModalStateService', ModalStateService);
 
     function ModalStateService () {
-        var openFn = null,
+        var openFns = [],
             closeFn = null;
 
         return {
@@ -16,11 +16,13 @@
         };
 
         function open (verseId) {
-            if (openFn == null) {
+            if (openFns.length === 0) {
                 return false;
             }
 
-            openFn(verseId);
+            for (var i = 0; i < openFns.length; i++) {
+                openFns[i](verseId);
+            }
         }
 
         function close () {
@@ -32,7 +34,7 @@
         }
 
         function onOpen(callback) {
-            openFn = callback;
+            openFns.push(callback);
         }
 
         function onClose(callback) {

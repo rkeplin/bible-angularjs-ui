@@ -95,8 +95,6 @@
             }
 
             function open (placement, verse) {
-                console.log(verse);
-
                 var element = document.getElementById('crossReferenceModal');
 
                 element.style.left = null;

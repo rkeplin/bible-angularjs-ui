@@ -46,6 +46,8 @@
         }
 
         function onSearch (result) {
+            window.scrollTo(0, 0);
+
             offset = 0;
 
             vm.result = result;

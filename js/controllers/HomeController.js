@@ -4,14 +4,15 @@
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state', 'SearchStateService'];
+    HomeController.$inject = ['$state', 'SearchStateService', 'ModalStateService'];
 
-    function HomeController ($state, SearchStateService) {
+    function HomeController ($state, SearchStateService, ModalStateService) {
         var vm = this;
         vm.navIsOpen = false;
         vm.onToggleLeftNav = onToggleLeftNav;
 
         SearchStateService.onReady(onSearchResults);
+        ModalStateService.onOpen(onOpenCrossReferenceModal);
 
         if ($state.$current.name === 'home') {
             $state.go('home.book', {
@@ -20,11 +21,11 @@
             }, {reload: true});
         }
 
-        function onSearchResults () {
-            if (window.innerWidth > 635) {
-                return;
-            }
+        function onOpenCrossReferenceModal () {
+            vm.navIsOpen = false;
+        }
 
+        function onSearchResults () {
             vm.navIsOpen = false;
         }
 

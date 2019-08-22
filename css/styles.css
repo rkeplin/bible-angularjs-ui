@@ -7,8 +7,6 @@ h3 {
 #main {
     padding: 20px;
     min-height: 1000px;
-    position: relative;
-    transition: 0.25s;
 }
 #left-nav {
     height: 100%;
@@ -33,9 +31,8 @@ h3 {
     transition: 0.25s;
 }
 #toggler {
-    transition: 0.25s;
 }
-.nav-open #toggler, #main.nav-open {
+.nav-open #toggler {
     margin-left: 400px;
     transition: 0.25s;
 }
@@ -135,7 +132,7 @@ select {
     font-size: 18px;
 }
 #crossReferenceModal {
-    position: absolute;
+    position: fixed;
     height: 100%;
     width: 50%;
     top: 65px;
@@ -144,20 +141,28 @@ select {
     padding-bottom:100px;
     overflow-y: auto;
 }
-
 /* Responsive */
 @media screen and (max-width: 635px) {
     #topnav.nav-open .translation-widget {
         display: none;
     }
     #left-nav.nav-open {
-        width: 85%;
+        width: 82%;
     }
-    #main.nav-open {
-        margin-left: 0px;
+    #main.pl-5 {
+        padding-left: 2rem!important;
+    }
+    #main.pr-5 {
+        padding-right: 2rem!important;
     }
     #topnav.nav-open #toggler {
         float: right;
+    }
+    /*.book-selector-widget button {*/
+        /*display: none;*/
+    /*}*/
+    #left-nav .mt-5 {
+        margin-top: 1rem!important;
     }
 }
 @media screen and (max-width: 767px) {

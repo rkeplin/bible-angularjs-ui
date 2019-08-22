@@ -137,8 +137,6 @@ angular.module('app.core')
             }
 
             function open (placement, verse) {
-                console.log(verse);
-
                 var element = document.getElementById('crossReferenceModal');
 
                 element.style.left = null;
@@ -161,14 +159,15 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state', 'SearchStateService'];
+    HomeController.$inject = ['$state', 'SearchStateService', 'ModalStateService'];
 
-    function HomeController ($state, SearchStateService) {
+    function HomeController ($state, SearchStateService, ModalStateService) {
         var vm = this;
         vm.navIsOpen = false;
         vm.onToggleLeftNav = onToggleLeftNav;
 
         SearchStateService.onReady(onSearchResults);
+        ModalStateService.onOpen(onOpenCrossReferenceModal);
 
         if ($state.$current.name === 'home') {
             $state.go('home.book', {
@@ -177,11 +176,11 @@ angular.module('app.core')
             }, {reload: true});
         }
 
-        function onSearchResults () {
-            if (window.innerWidth > 635) {
-                return;
-            }
+        function onOpenCrossReferenceModal () {
+            vm.navIsOpen = false;
+        }
 
+        function onSearchResults () {
             vm.navIsOpen = false;
         }
 
@@ -239,6 +238,8 @@ angular.module('app.core')
         }
 
         function onSearch (result) {
+            window.scrollTo(0, 0);
+
             offset = 0;
 
             vm.result = result;
@@ -516,8 +517,6 @@ angular.module('app.core')
         });
 
         ModalStateService.onOpen(function(verse) {
-            window.scroll(0, 0);
-
             if (currentVerse !== null) {
                 currentVerse.highlight = false;
             }
@@ -540,6 +539,8 @@ angular.module('app.core')
                 .then(function(data) {
                     vm.relatedVerses = data;
                     vm.isLoading = false;
+
+                    document.getElementById('crossReferenceModal').scrollTop = 0;
                 });
         }
 
@@ -796,7 +797,7 @@ angular.module('app.core')
         .service('ModalStateService', ModalStateService);
 
     function ModalStateService () {
-        var openFn = null,
+        var openFns = [],
             closeFn = null;
 
         return {
@@ -807,11 +808,13 @@ angular.module('app.core')
         };
 
         function open (verseId) {
-            if (openFn == null) {
+            if (openFns.length === 0) {
                 return false;
             }
 
-            openFn(verseId);
+            for (var i = 0; i < openFns.length; i++) {
+                openFns[i](verseId);
+            }
         }
 
         function close () {
@@ -823,7 +826,7 @@ angular.module('app.core')
         }
 
         function onOpen(callback) {
-            openFn = callback;
+            openFns.push(callback);
         }
 
         function onClose(callback) {
