@@ -161,14 +161,32 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state'];
+    HomeController.$inject = ['$state', 'SearchStateService'];
 
-    function HomeController ($state) {
+    function HomeController ($state, SearchStateService) {
+        var vm = this;
+        vm.navIsOpen = false;
+        vm.onToggleLeftNav = onToggleLeftNav;
+
+        SearchStateService.onReady(onSearchResults);
+
         if ($state.$current.name === 'home') {
             $state.go('home.book', {
                 'bookId': 1,
                 'chapterId': 1
             }, {reload: true});
+        }
+
+        function onSearchResults () {
+            if (window.innerWidth > 635) {
+                return;
+            }
+
+            vm.navIsOpen = false;
+        }
+
+        function onToggleLeftNav() {
+            vm.navIsOpen = !vm.navIsOpen;
         }
     }
 })();
@@ -498,6 +516,8 @@ angular.module('app.core')
         });
 
         ModalStateService.onOpen(function(verse) {
+            window.scroll(0, 0);
+
             if (currentVerse !== null) {
                 currentVerse.highlight = false;
             }
@@ -649,7 +669,9 @@ angular.module('app.core')
     'use strict';
 
     angular.module('app.core')
-        .service('ApiService', ['$http', 'API_URL', '$q', ApiService]);
+        .service('ApiService', ApiService);
+
+    ApiService.$inject = ['$http', 'API_URL', '$q'];
 
     function ApiService($http, API_URL, $q) {
         return {
@@ -817,7 +839,7 @@ angular.module('app.core')
         .service('SearchStateService', SearchStateService);
 
     function SearchStateService () {
-        var subscriptionFn;
+        var subscriptionFns = [];
 
         return {
             onReady: onReady,
@@ -826,16 +848,20 @@ angular.module('app.core')
         };
 
         function onReady (fn) {
-            subscriptionFn = fn;
+            subscriptionFns.push(fn);
         }
 
         function unsubscribe () {
-            subscriptionFn = null;
+            subscriptionFns = [];
         }
 
         function ready () {
-            if (subscriptionFn != null) {
-                subscriptionFn();
+            if (subscriptionFns.length === 0) {
+                return;
+            }
+
+            for (var i = 0; i < subscriptionFns.length; i++) {
+                subscriptionFns[i]();
             }
         }
     }

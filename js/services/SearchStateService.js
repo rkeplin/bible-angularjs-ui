@@ -5,7 +5,7 @@
         .service('SearchStateService', SearchStateService);
 
     function SearchStateService () {
-        var subscriptionFn;
+        var subscriptionFns = [];
 
         return {
             onReady: onReady,
@@ -14,16 +14,20 @@
         };
 
         function onReady (fn) {
-            subscriptionFn = fn;
+            subscriptionFns.push(fn);
         }
 
         function unsubscribe () {
-            subscriptionFn = null;
+            subscriptionFns = [];
         }
 
         function ready () {
-            if (subscriptionFn != null) {
-                subscriptionFn();
+            if (subscriptionFns.length === 0) {
+                return;
+            }
+
+            for (var i = 0; i < subscriptionFns.length; i++) {
+                subscriptionFns[i]();
             }
         }
     }

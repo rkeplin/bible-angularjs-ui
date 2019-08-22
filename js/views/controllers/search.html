@@ -6,7 +6,7 @@
 
     <div class="row">
         <div class="col-md-6" ng-repeat="item in vm.result.items">
-            <div class="well mb20 p15" style="background-color: #f2f2f2;">
+            <div class="well mb20 p15 search-result">
                 <p>
                     <b>
                         <a title="Navigate To Verse" ui-sref="home.book({bookId: item.book.id, chapterId: item.chapterId, verseId: item.verseId})">{{ item.book.name }} {{ item.chapterId }}:{{ item.verseId }}</a>

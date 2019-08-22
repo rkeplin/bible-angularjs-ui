@@ -4,25 +4,40 @@ h3 {
     font-weight: normal;
     margin-bottom: 15px;
 }
-.main {
+#main {
     padding: 20px;
     min-height: 1000px;
+    position: relative;
+    transition: 0.25s;
 }
-.left-nav {
+#left-nav {
     height: 100%;
-    width: 400px;
     background-color: #f2f2f2;
     position: fixed;
     top: 0;
-    left: 0;
     z-index: 1;
+    width: 400px;
+    left: -400px;
+    transition: 0.25s;
 }
-.left-nav h4 {
+#left-nav h4 {
     color: #999;
     font-size: 20px;
     font-weight: normal;
     border-bottom: 2px dotted #ccc;
     padding-bottom: 5px;
+}
+
+#left-nav.nav-open {
+    left: 0px;
+    transition: 0.25s;
+}
+#toggler {
+    transition: 0.25s;
+}
+.nav-open #toggler, #main.nav-open {
+    margin-left: 400px;
+    transition: 0.25s;
 }
 .search-widget input {
     width: 100%;
@@ -37,14 +52,14 @@ h3 {
     padding: 5px;
     width: 100%;
 }
-.main {
-    margin-left: 400px;
-}
 .toggle-leftnav-icon {
     color: #f5f5f5
 }
 .toggle-leftnav-icon:hover {
     cursor: pointer;
+}
+.search-result {
+    background-color: #f8f8f8;
 }
 
 /*
@@ -120,7 +135,7 @@ select {
     font-size: 18px;
 }
 #crossReferenceModal {
-    position: fixed;
+    position: absolute;
     height: 100%;
     width: 50%;
     top: 65px;
@@ -132,8 +147,17 @@ select {
 
 /* Responsive */
 @media screen and (max-width: 635px) {
-    #topnav button {
+    #topnav.nav-open .translation-widget {
         display: none;
+    }
+    #left-nav.nav-open {
+        width: 85%;
+    }
+    #main.nav-open {
+        margin-left: 0px;
+    }
+    #topnav.nav-open #toggler {
+        float: right;
     }
 }
 @media screen and (max-width: 767px) {

@@ -1,13 +1,13 @@
-<div id="topnav">
-    <div class="pull-left" style="margin-left: 400px;">
-        <svg class="toggle-leftnav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30" focusable="false"><title>Menu</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"></path></svg>
+<div id="topnav" ng-class="{ 'nav-open': vm.navIsOpen }">
+    <div id="toggler" class="pl-4 pull-left">
+        <svg ng-click="vm.onToggleLeftNav()" class="toggle-leftnav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30" focusable="false"><title>Menu</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"></path></svg>
     </div>
-    <div class="pull-right">
+    <div class="pull-right translation-widget">
         <translation-selector></translation-selector>
     </div>
 </div>
 
-<div class="left-nav">
+<div id="left-nav" ng-class="{ 'nav-open': vm.navIsOpen }">
     <div class="p-4">
         <h4 class="mb-3">Jump To Book</h4>
         <book-selector class=""></book-selector>
@@ -16,6 +16,6 @@
         <search-input></search-input>
     </div>
 </div>
-<div class="main">
+<div id="main" class="pl-5 pr-5" ng-class="{ 'nav-open': vm.navIsOpen }">
     <div ui-view></div>
 </div>

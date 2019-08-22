@@ -35,6 +35,8 @@
         });
 
         ModalStateService.onOpen(function(verse) {
+            window.scroll(0, 0);
+
             if (currentVerse !== null) {
                 currentVerse.highlight = false;
             }

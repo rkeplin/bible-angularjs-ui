@@ -2,7 +2,9 @@
     'use strict';
 
     angular.module('app.core')
-        .service('ApiService', ['$http', 'API_URL', '$q', ApiService]);
+        .service('ApiService', ApiService);
+
+    ApiService.$inject = ['$http', 'API_URL', '$q'];
 
     function ApiService($http, API_URL, $q) {
         return {
