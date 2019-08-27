@@ -21,7 +21,13 @@ COPY build build
 COPY css css
 COPY js js
 COPY .htaccess .htaccess
-COPY favicon.png favicon.png
+COPY android-chrome-192x192.png android-chrome-192x192.png
+COPY android-chrome-512x512.png android-chrome-512x512.png
+COPY apple-touch-icon.png apple-touch-icon.png
+COPY favicon.ico favicon.ico
+COPY favicon-16x16.png favicon-16x16.png
+COPY favicon-32x32.png favicon-32x32.png
+COPY site.webmanifest site.webmanifest
 COPY index.html index.html
 
 ENTRYPOINT ["/docker-entrypoint.sh", "/usr/sbin/httpd", "-D", "FOREGROUND"]
