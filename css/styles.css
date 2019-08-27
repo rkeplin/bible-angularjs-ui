@@ -186,9 +186,6 @@ select {
         margin-left: 0;
         transition: none;
     }
-    #left-nav .mt-5 {
-        margin-top: 1rem!important;
-    }
 }
 @media screen and (max-width: 438px) {
     .hide-xs {
