@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<sitemap>
+<urlset xmlns="http://www.urls.org/schemas/url/0.9">
+	<url>
 		<loc>https://bible-ui.rkeplin.com/books/65/1</loc>
 		<lastmod>2019-10-02T00:00:00+00:00</lastmod>
-	</sitemap>
+	</url>
 </urlset>
