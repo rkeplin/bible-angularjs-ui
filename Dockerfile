@@ -18,6 +18,7 @@ COPY .docker/local.conf /etc/httpd/conf.d/local.conf
 WORKDIR /var/www/html
 
 COPY build build
+COPY sitemaps sitemaps
 COPY css css
 COPY js js
 COPY .htaccess .htaccess
