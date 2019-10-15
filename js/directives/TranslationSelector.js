@@ -32,7 +32,7 @@
                     for (var i = 0; i < translations.length; i++) {
                         translations[i].name = translations[i].abbreviation;
 
-                        if (TranslationStateService.getCurrent() == translations[i].abbreviation) {
+                        if (TranslationStateService.getCurrent().toLowerCase() == translations[i].abbreviation.toLowerCase()) {
                             vm.selected.translation = translations[i];
                         }
                     }

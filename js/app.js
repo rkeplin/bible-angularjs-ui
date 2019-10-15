@@ -18,6 +18,12 @@ angular.module('app', ['ngRoute', 'ui.router', 'ngSanitize', 'ngCookies', 'app.c
                     controller: 'BookController',
                     controllerAs: 'vm'
                 }).
+                state('home.bookWithTranslation', {
+                    url: ':translation/books/:bookId/:chapterId?verseId',
+                    templateUrl: '/js/views/controllers/book.html',
+                    controller: 'BookController',
+                    controllerAs: 'vm'
+                }).
                 state('home.search', {
                     url: 'search/?query',
                     templateUrl: '/js/views/controllers/search.html',

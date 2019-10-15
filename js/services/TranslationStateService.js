@@ -2,10 +2,14 @@
     'use strict';
 
     angular.module('app.core')
-        .service('TranslationStateService', ['$cookies', 'DEFAULT_TRANSLATION', TranslationStateService]);
+        .service('TranslationStateService', ['$cookies', '$stateParams', 'DEFAULT_TRANSLATION', TranslationStateService]);
 
-    function TranslationStateService ($cookies, DEFAULT_TRANSLATION) {
+    function TranslationStateService ($cookies, $stateParams, DEFAULT_TRANSLATION) {
         var changeFns = {};
+
+        if ($stateParams.hasOwnProperty('translation')) {
+            $cookies.put('translation', $stateParams.translation);
+        }
 
         if (typeof $cookies.get('translation') === 'undefined') {
             $cookies.put('translation', DEFAULT_TRANSLATION);

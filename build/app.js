@@ -18,6 +18,12 @@ angular.module('app', ['ngRoute', 'ui.router', 'ngSanitize', 'ngCookies', 'app.c
                     controller: 'BookController',
                     controllerAs: 'vm'
                 }).
+                state('home.bookWithTranslation', {
+                    url: ':translation/books/:bookId/:chapterId?verseId',
+                    templateUrl: '/js/views/controllers/book.html',
+                    controller: 'BookController',
+                    controllerAs: 'vm'
+                }).
                 state('home.search', {
                     url: 'search/?query',
                     templateUrl: '/js/views/controllers/search.html',
@@ -723,7 +729,7 @@ angular.module('app.core')
                     for (var i = 0; i < translations.length; i++) {
                         translations[i].name = translations[i].abbreviation;
 
-                        if (TranslationStateService.getCurrent() == translations[i].abbreviation) {
+                        if (TranslationStateService.getCurrent().toLowerCase() == translations[i].abbreviation.toLowerCase()) {
                             vm.selected.translation = translations[i];
                         }
                     }
@@ -980,10 +986,14 @@ angular.module('app.core')
     'use strict';
 
     angular.module('app.core')
-        .service('TranslationStateService', ['$cookies', 'DEFAULT_TRANSLATION', TranslationStateService]);
+        .service('TranslationStateService', ['$cookies', '$stateParams', 'DEFAULT_TRANSLATION', TranslationStateService]);
 
-    function TranslationStateService ($cookies, DEFAULT_TRANSLATION) {
+    function TranslationStateService ($cookies, $stateParams, DEFAULT_TRANSLATION) {
         var changeFns = {};
+
+        if ($stateParams.hasOwnProperty('translation')) {
+            $cookies.put('translation', $stateParams.translation);
+        }
 
         if (typeof $cookies.get('translation') === 'undefined') {
             $cookies.put('translation', DEFAULT_TRANSLATION);
