@@ -8,7 +8,8 @@ module.exports = function (grunt) {
                     'vendor/angular/angular-route.js',
                     'vendor/angular/angular-sanitize.js',
                     'vendor/angular/angular-cookies.js',
-                    'vendor/angular/angular-ui-router.js'
+                    'vendor/angular/angular-ui-router.js',
+                    'vendor/chart.js-2.9.3/Chart.min.js'
                 ],
                 dest: 'build/vendor.js'
             },
@@ -53,7 +54,8 @@ module.exports = function (grunt) {
                     'build/vendor.min.css': [
                         'vendor/bootstrap/bootstrap-4.0.0.css',
                         'vendor/font-awesome/font-awesome.min.css',
-                        'vendor/theme/sb-admin.css'
+                        'vendor/theme/sb-admin.css',
+                        'vendor/chart.js-2.9.3/Chart.min.css'
                     ]
                 }
             },

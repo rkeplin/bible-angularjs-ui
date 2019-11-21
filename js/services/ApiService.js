@@ -14,7 +14,8 @@
             getChaptersFromBook: getChaptersFromBook,
             getMaxChapterFromBook: getMaxChapterFromBook,
             getText: getText,
-            search: search
+            search: search,
+            searchAggregation: searchAggregation
         };
 
         function getTranslations () {
@@ -65,6 +66,15 @@
                     translation: translation,
                     offset: offset,
                     limit: limit
+                }
+            });
+        }
+
+        function searchAggregation (query, translation) {
+            return _get('/searchAggregator', {
+                params: {
+                    query: query,
+                    translation: translation
                 }
             });
         }

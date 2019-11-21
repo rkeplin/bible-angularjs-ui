@@ -4,6 +4,9 @@ h3 {
     font-weight: normal;
     margin-bottom: 15px;
 }
+.fw-600 {
+    font-weight: 600;
+}
 #main {
     padding: 20px;
     min-height: 1000px;
