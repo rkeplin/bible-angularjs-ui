@@ -194,6 +194,12 @@ select {
     .hide-xs {
         display: none;
     }
+    .ntHitBadge, .otHitBadge {
+        display: block;
+    }
+    .ntHitBadge {
+        margin-top: 10px;
+    }
 }
 @media screen and (max-width: 998px) {
     #topnav.nav-open .title h2 {
