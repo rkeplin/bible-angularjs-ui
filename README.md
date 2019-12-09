@@ -29,3 +29,7 @@ You should then be able to access [http://localhost:8082](http://localhost:8082)
 Data for this application was gathered from the following repositories.
 * [scrollmaper/bible_database](https://github.com/scrollmapper/bible_databases)
 * [honza/bibles](https://github.com/honza/bibles)
+
+### Thanks
+<a href="https://www.browserstack.com/"><img src="https://user-images.githubusercontent.com/1911623/66797775-4d651300-eee2-11e9-9072-ef1dc670af1d.png" width="150" height="auto"/></a>
+[BrowserStack](https://www.browserstack.com/) for letting Open Source projects use their services for free.
