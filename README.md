@@ -32,4 +32,5 @@ Data for this application was gathered from the following repositories.
 
 ### Thanks
 <a href="https://www.browserstack.com/"><img src="https://user-images.githubusercontent.com/1911623/66797775-4d651300-eee2-11e9-9072-ef1dc670af1d.png" width="150" height="auto"/></a>
+
 [BrowserStack](https://www.browserstack.com/) for letting Open Source projects use their services for free.
