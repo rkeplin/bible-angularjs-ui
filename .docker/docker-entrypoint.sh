@@ -7,7 +7,7 @@ if [ ! -z "${URL}" ]; then
 fi
 
 if [ ! -z "${API_URL}" ]; then
-    sed -i "s|http://localhost:8083|${API_URL}|g" /var/www/html/build/env.js
+    sed -i "s|http://localhost:8084|${API_URL}|g" /var/www/html/build/env.js
     sed -i "s|http://bible-go-api.rkeplin.local/v1|${API_URL}|g" /var/www/html/build/env.js
 fi
 
