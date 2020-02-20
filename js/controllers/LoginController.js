@@ -4,9 +4,9 @@
     angular.module('app.core')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['AppService', '$state', 'TitleStateService'];
+    LoginController.$inject = ['AppService', '$cookies', '$state', 'TitleStateService'];
 
-    function LoginController (AppService, $state, TitleStateService) {
+    function LoginController (AppService, $cookies, $state, TitleStateService) {
         var vm = this;
         vm.error = false;
         vm.email = '';
@@ -29,6 +29,8 @@
         }
 
         function onLoginError(error) {
+            $cookies.remove('token');
+
             vm.error = error.data;
         }
 
