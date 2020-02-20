@@ -10,7 +10,7 @@
     </div>
 
     <div ng-show="!vm.isLoading" class="overflow clear">
-        <div class="well mb20 p15" ng-repeat="items in vm.relatedVerses" style="background-color: #f2f2f2;">
+        <div class="well mb20 p15 bg-gray" ng-repeat="items in vm.relatedVerses">
             <div ng-repeat="relatedVerse in items">
                 <p ng-show="$first"><b>{{ relatedVerse.book.name }}</b> - <i>{{ relatedVerse.book.testament }}</i></p>
                 <p><b>{{ relatedVerse.chapterId }}:{{ relatedVerse.verseId }}</b> {{ relatedVerse.verse }}</p>

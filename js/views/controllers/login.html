@@ -1,0 +1,48 @@
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="alert alert-danger" ng-show="vm.error">
+            <p ng-show="vm.error.description"><b>{{ vm.error.description }}</b></p>
+            <ul ng-show="vm.error.errors">
+                <li ng-repeat="error in vm.error.errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Login
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input name="email"
+                               id="email"
+                               ng-model="vm.email"
+                               type="email"
+                               placeholder="Enter email..."
+                               ng-keypress="vm.onKeyPress($event)"
+                               type="email"
+                               class="form-control"
+                               placeholder="Enter email">
+                        <small class="form-text text-muted">Don't have an account? <a ui-sref="home.register">Register</a></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input name="password"
+                               class="form-control"
+                               id="password"
+                               ng-model="vm.password"
+                               type="password"
+                               placeholder="Enter password..."
+                               ng-keypress="vm.onKeyPress($event)" />
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-muted">
+                <button ng-disabled="vm.isLoading" ng-click="vm.login()" class="btn btn-primary">Login</button>
+            </div>
+        </div>
+    </div>
+</div>

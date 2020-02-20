@@ -7,6 +7,20 @@
     </div>
     <div class="pull-right translation-widget">
         <translation-selector></translation-selector>
+
+        <div ng-show="!vm.loggedIn" style="display: inline-block;">
+            <a ng-show="!vm.loggedIn" ui-sref="home.login" class="btn btn-primary ml-2 btn-sm">Log in</a>
+        </div>
+
+        <div ng-show="vm.loggedIn" style="display: inline-block;">
+            <button type="button" class="btn btn-primary ml-2 btn-sm dropdown-toggle" ng-disabled="vm.isLoading" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                My Account
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" ui-sref="home.list">Manage Lists</a>
+                <a class="dropdown-item" ui-sref="home.logout">Logout</a>
+            </div>
+        </div>
     </div>
 </div>
 

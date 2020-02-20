@@ -66,6 +66,10 @@
 
         function getBooks () {
             return ApiService.getBooks().then(function(books) {
+                for (var i = 0; i < books.length; i++) {
+                    books[i].testament = (books[i].testament === 'OT') ? 'Old Testament' : 'New Testament';
+                }
+
                 vm.books = books;
                 setSelectedBook(stateBookId);
 

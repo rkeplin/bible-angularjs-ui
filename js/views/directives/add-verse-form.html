@@ -1,0 +1,49 @@
+<div class="alert alert-danger mb-0" ng-show="vm.error">
+    <p ng-show="vm.error.description"><b>{{ vm.error.description }}</b></p>
+    <ul ng-show="vm.error.errors">
+        <li ng-repeat="error in vm.error.errors">{{ error }}</li>
+    </ul>
+</div>
+
+<div class="book-selector-widget">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning p-4" style="width: 100%;">
+                <div class="mb-3">{{ vm.selected.verse.verse || '...' }}</div>
+
+                <div class="row">
+                    <div class="col-md-6 pr-1 mb-2">
+                        <select ng-disabled="vm.isLoading"
+                                name="selectedBook"
+                                id="selectedBook"
+                                ng-model="vm.selected.book"
+                                ng-options="book.name for book in vm.books track by book.id"
+                                ng-change="vm.onSelectBook(vm.selected.book)">
+                        </select>
+                    </div>
+                    <div class="col-md-2 pr-1 mb-2">
+                        <select ng-disabled="vm.isLoading"
+                                name="selectedChapter"
+                                id="selectedChapter"
+                                ng-model="vm.selected.chapter"
+                                ng-options="chapter.id for chapter in vm.chapters track by chapter.id"
+                                ng-change="vm.onSelectChapter(vm.selected.chapter)">
+                        </select>
+                    </div>
+                    <div class="col-md-2 pr-1 mb-2">
+                        <select ng-disabled="vm.isLoading"
+                                name="selectedVerse"
+                                id="selectedVerse"
+                                ng-model="vm.selected.verse"
+                                ng-options="verse.id for verse in vm.verses track by verse.id">
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 pr-1">
+                        <button ng-disabled="vm.isLoading" ng-click="vm.save()" class="btn btn-warning btn-block">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

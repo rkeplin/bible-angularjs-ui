@@ -18,7 +18,8 @@
         return {
             change: change,
             onChange: onChange,
-            getCurrent: getCurrent
+            getCurrent: getCurrent,
+            unsubscribe: unsubscribe
         };
 
         function change (translation) {
@@ -37,6 +38,12 @@
 
         function getCurrent () {
             return $cookies.get('translation');
+        }
+
+        function unsubscribe (key) {
+            changeFns[key] = null;
+
+            delete changeFns[key];
         }
     }
 })();

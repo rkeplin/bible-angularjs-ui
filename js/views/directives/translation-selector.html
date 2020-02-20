@@ -1,7 +1,8 @@
-<select ng-disabled="vm.isLoading"
-        name="selectedTranslation"
-        id="selectedTranslation"
-        ng-model="vm.selected.translation"
-        ng-options="translation.name for translation in vm.translations track by translation.id"
-        ng-change="vm.onSelectTranslation(vm.selected.translation)">
-</select>
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" ng-disabled="vm.isLoading" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    {{ vm.selected.translation.name }}
+</button>
+<div class="dropdown-menu">
+    <a ng-repeat="translation in vm.translations" class="dropdown-item" href="" ng-click="vm.onSelectTranslation(translation)" ng-class="{ 'bg-brown text-white': translation.id == vm.selected.translation.id }">
+        {{ translation.name }}
+    </a>
+</div>

@@ -7,4 +7,5 @@ if (window) {
 angular.module('app.core')
     .value('URL', coreAppEnv.URL)
     .value('API_URL', coreAppEnv.API_URL)
+    .value('APP_API_URL', coreAppEnv.APP_API_URL)
     .value('DEFAULT_TRANSLATION', coreAppEnv.DEFAULT_TRANSLATION);

@@ -5,7 +5,7 @@
                     name="selectedBook"
                     id="selectedBook"
                     ng-model="vm.selected.book"
-                    ng-options="book.name for book in vm.books track by book.id"
+                    ng-options="book.name group by book.testament for book in vm.books track by book.id"
                     ng-change="vm.onSelectBook(vm.selected.book)">
             </select>
         </div>

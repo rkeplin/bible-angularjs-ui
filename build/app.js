@@ -12,6 +12,36 @@ angular.module('app', ['ngRoute', 'ui.router', 'ngSanitize', 'ngCookies', 'app.c
                     controller: 'HomeController',
                     controllerAs: 'vm'
                 }).
+                state('home.register', {
+                    url: 'register',
+                    templateUrl: '/js/views/controllers/register.html',
+                    controller: 'RegisterController',
+                    controllerAs: 'vm'
+                }).
+                state('home.login', {
+                    url: 'login',
+                    templateUrl: '/js/views/controllers/login.html',
+                    controller: 'LoginController',
+                    controllerAs: 'vm'
+                }).
+                state('home.logout', {
+                    url: 'logout',
+                    templateUrl: '/js/views/controllers/logout.html',
+                    controller: 'LogoutController',
+                    controllerAs: 'vm'
+                }).
+                state('home.list', {
+                    url: 'list',
+                    templateUrl: '/js/views/controllers/list.html',
+                    controller: 'ListController',
+                    controllerAs: 'vm'
+                }).
+                state('home.listVerses', {
+                    url: 'list/:listId/verses',
+                    templateUrl: '/js/views/controllers/list-verses.html',
+                    controller: 'ListVersesController',
+                    controllerAs: 'vm'
+                }).
                 state('home.book', {
                     url: 'books/:bookId/:chapterId?verseId',
                     templateUrl: '/js/views/controllers/book.html',
@@ -32,6 +62,16 @@ angular.module('app', ['ngRoute', 'ui.router', 'ngSanitize', 'ngCookies', 'app.c
                 });
 
             $locationProvider.html5Mode(true);
+
+            /* Turn on withCredentials - needed for CORS */
+            // $httpProvider.interceptors.push([function() {
+            //     return {
+            //         request: function (config) {
+            //             config.withCredentials = true;
+            //             return config;
+            //         }
+            //     };
+            // }]);
         }
     ]);
 
@@ -44,6 +84,7 @@ if (window) {
 angular.module('app.core')
     .value('URL', coreAppEnv.URL)
     .value('API_URL', coreAppEnv.API_URL)
+    .value('APP_API_URL', coreAppEnv.APP_API_URL)
     .value('DEFAULT_TRANSLATION', coreAppEnv.DEFAULT_TRANSLATION);
 
 (function() {
@@ -183,13 +224,14 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state', '$transitions', 'SearchStateService', 'ModalStateService', 'TitleStateService'];
+    HomeController.$inject = ['$state', '$cookies', 'AppService', '$transitions', 'SearchStateService', 'ModalStateService', 'TitleStateService'];
 
-    function HomeController ($state, $transitions, SearchStateService, ModalStateService, TitleStateService) {
+    function HomeController ($state, $cookies, AppService, $transitions, SearchStateService, ModalStateService, TitleStateService) {
         var vm = this;
         vm.navIsOpen = false;
         vm.title = 'Loading...';
         vm.onToggleLeftNav = onToggleLeftNav;
+        vm.loggedIn = $cookies.get('token');
 
         SearchStateService.onReady(onSearchResults);
         TitleStateService.onChange(onTitleChange);
@@ -212,6 +254,8 @@ angular.module('app.core')
             if (transition.to().name == 'home.book') {
                 ModalStateService.onOpen(closeNavigation);
             }
+
+            vm.loggedIn = $cookies.get('token');
         }
 
         function onTitleChange (value) {
@@ -263,6 +307,365 @@ angular.module('app.core')
             var elem = document.querySelector('body');
             elem.style.overflow = 'hidden';
         }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .controller('ListController', ListController);
+
+    ListController.$inject = ['AppService', 'TitleStateService', '$state', '$scope'];
+
+    function ListController (AppService, TitleStateService, $state, $scope) {
+        var vm = this;
+        vm.isLoading = false;
+        vm.error = false;
+        vm.toggleAddForm = false;
+        vm.toggleUpdateForm = false;
+        vm.toggleDeleteForm = false;
+        vm.lists = [];
+        vm.list = { name: '' };
+        vm.add = add;
+        vm.update = update;
+        vm.remove = remove;
+        vm.onKeyPress = onKeyPress;
+        vm.showAddForm = showAddForm;
+        vm.showUpdateForm = showUpdateForm;
+        vm.showDeleteForm = showDeleteForm;
+
+        TitleStateService.change('<b>Manage Lists</b>');
+
+        checkAuthorization().then(load);
+
+        function showAddForm () {
+            clearSelectedLists();
+
+            vm.toggleAddForm = !vm.toggleAddForm;
+            vm.toggleUpdateForm = false;
+            vm.toggleDeleteForm = false;
+            vm.error = false;
+            vm.list = { name: '' };
+        }
+
+        function showUpdateForm (list) {
+            clearSelectedLists();
+
+            list.selected = true;
+
+            vm.toggleAddForm = false;
+            vm.toggleUpdateForm = true;
+            vm.toggleDeleteForm = false;
+            vm.error = false;
+            vm.list = angular.copy(list);
+        }
+
+        function showDeleteForm (list) {
+            clearSelectedLists();
+
+            list.selected = true;
+
+            vm.toggleAddForm = false;
+            vm.toggleUpdateForm = false;
+            vm.toggleDeleteForm = true;
+            vm.error = false;
+            vm.list = angular.copy(list);
+        }
+
+        function add(list) {
+            vm.error = false;
+            vm.isLoading = true;
+
+            AppService.addList(list)
+                .then(onSave)
+                .catch(onError)
+                .finally(stopLoading)
+        }
+
+        function update(list) {
+            vm.error = false;
+            vm.isLoading = true;
+
+            AppService.updateList(list.id, list)
+                .then(onSave)
+                .catch(onError)
+                .then(function () {
+                    list.selected = false;
+                    vm.toggleUpdateForm = false;
+                })
+                .finally(stopLoading)
+        }
+
+        function remove(list) {
+            vm.isLoading = true;
+
+            AppService.removeList(list.id)
+                .then(function () {
+                    vm.toggleDeleteForm = false;
+                    vm.error = false;
+                })
+                .then(load)
+                .finally(stopLoading)
+        }
+
+        function load () {
+            AppService.list()
+                .then(function(data) {
+                    for (var i = 0; i < data.length; i++) {
+                        data[i].dateAdded = new Date(data[i].dateAdded);
+                        data[i].dateUpdated = new Date(data[i].dateUpdated);
+                    }
+
+                    vm.lists = data;
+                });
+        }
+
+        function stopLoading() {
+            vm.isLoading = false;
+        }
+
+        function onSave () {
+            load();
+
+            vm.list = { name: '' };
+            vm.error = false;
+        }
+
+        function onError (error) {
+            vm.error = error.data;
+        }
+
+        function onKeyPress (event) {
+            var keyCode = event.which || event.keyCode;
+
+            if (keyCode === 13) {
+                if (vm.toggleAddForm) {
+                    add(vm.list);
+                }
+
+                if (vm.toggleUpdateForm) {
+                    update(vm.list);
+                }
+            }
+        }
+
+        function clearSelectedLists () {
+            for (var i = 0; i < vm.lists.length; i++) {
+                vm.lists[i].selected = false;
+            }
+        }
+
+        function checkAuthorization() {
+            return AppService.me()
+                .catch(function () {
+                    $state.go('home.login');
+                });
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .controller('ListVersesController', ListVersesController);
+
+    ListVersesController.$inject = ['AppService', '$stateParams', 'TitleStateService', '$state', '$scope'];
+
+    function ListVersesController (AppService, $stateParams, TitleStateService, $state, $scope) {
+        var vm = this;
+        vm.isLoading = false;
+        vm.error = false;
+        vm.listId = $stateParams.listId;
+        vm.list = {
+            name: ''
+        };
+        vm.verses = [];
+        vm.verse = {};
+        vm.toggleAddForm = false;
+        vm.toggleDeleteForm = false;
+        vm.showAddVerseForm = showAddVerseForm;
+        vm.showDeleteForm = showDeleteForm;
+        vm.remove = remove;
+
+        TitleStateService.change('<b>Manage Lists</b><span class="hide-xs"> - <i>Add Verses</i></span>');
+
+        checkAuthorization().then(load);
+
+        $scope.$on('verse.added', function() {
+            load();
+        });
+
+        function showAddVerseForm () {
+            vm.error = false;
+
+            vm.toggleAddForm = true;
+            vm.toggleDeleteForm = false;
+        }
+
+        function showDeleteForm (verse) {
+            vm.error = false;
+            verse.selected = true;
+
+            vm.toggleAddForm = false;
+            vm.toggleDeleteForm = true;
+            vm.verse = angular.copy(verse);
+        }
+
+        function remove(verse) {
+            vm.isLoading = true;
+
+            AppService.removeVerseFromList(vm.listId, verse.text.id, verse.translation)
+                .then(function() {
+                    vm.verse = {};
+                    vm.toggleDeleteForm = false;
+                })
+                .then(load)
+                .finally(stopLoading)
+        }
+
+        function load () {
+            return AppService.listById(vm.listId)
+                .then(function(data) {
+                    vm.list = data;
+
+                    AppService.getVersesFromList(vm.listId)
+                        .then(function(verses) {
+                            vm.verses = verses;
+                        });
+                })
+                .catch(function() {
+                    $state.go('home.lists');
+                });
+        }
+
+        function stopLoading() {
+            vm.isLoading = false;
+        }
+
+        function checkAuthorization() {
+            return AppService.me()
+                .catch(function () {
+                    $state.go('home.login');
+                });
+
+
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .controller('LoginController', LoginController);
+
+    LoginController.$inject = ['AppService', '$state', 'TitleStateService'];
+
+    function LoginController (AppService, $state, TitleStateService) {
+        var vm = this;
+        vm.error = false;
+        vm.email = '';
+        vm.password = '';
+        vm.onKeyPress = onKeyPress;
+        vm.login = login;
+
+        TitleStateService.change('Login');
+
+        function login() {
+            vm.error = false;
+
+            AppService.login(vm.email, vm.password)
+                .then(onLogin)
+                .catch(onLoginError);
+        }
+
+        function onLogin() {
+            $state.go('home.list');
+        }
+
+        function onLoginError(error) {
+            vm.error = error.data;
+        }
+
+        function onKeyPress (event) {
+            var keyCode = event.which || event.keyCode;
+
+            if (keyCode === 13) {
+                login();
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .controller('LogoutController', LogoutController);
+
+    LogoutController.$inject = ['AppService', '$cookies', 'TitleStateService', '$state'];
+
+    function LogoutController (AppService, $cookies, TitleStateService, $state) {
+        TitleStateService.change('Logout');
+
+        AppService.logout()
+            .finally(function() {
+                $cookies.remove('token');
+
+                $state.go('home.login');
+            });
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .controller('RegisterController', RegisterController);
+
+    RegisterController.$inject = ['AppService', '$state', 'TitleStateService'];
+
+    function RegisterController (AppService, $state, TitleStateService) {
+        var vm = this;
+        vm.error = false;
+        vm.email = '';
+        vm.password = '';
+        vm.passwordConf = '';
+        vm.onKeyPress = onKeyPress;
+        vm.register = register;
+
+        TitleStateService.change('Register');
+
+        function register() {
+            vm.error = false;
+
+            AppService.register(vm.email, vm.password, vm.passwordConf)
+                .then(onRegister)
+                .catch(onRegisterError);
+        }
+
+        function onRegisterError(error) {
+            vm.error = error.data;
+        }
+
+        function onRegister() {
+            AppService.login(vm.email, vm.password).then(onLogin);
+        }
+
+        function onLogin() {
+            $state.go('home.list');
+        }
+
+        function onKeyPress (event) {
+            var keyCode = event.which || event.keyCode;
+
+            if (keyCode === 13) {
+                register();
+            }
+        }
+
     }
 })();
 
@@ -453,6 +856,135 @@ angular.module('app.core')
     'use strict';
 
     angular.module('app.core')
+        .directive('addVerseForm', addVerseForm);
+
+    function addVerseForm () {
+        return {
+            restrict: 'E',
+            scope: {},
+            controller: ctrl,
+            controllerAs: 'vm',
+            bindToController: true,
+            templateUrl: '/js/views/directives/add-verse-form.html'
+        };
+    }
+
+    ctrl.$inject = ['$scope', '$stateParams', 'AppService', 'ApiService', '$q', 'TranslationStateService', '$transitions'];
+
+    function ctrl ($scope, $stateParams, AppService, ApiService, $q, TranslationStateService, $transitions) {
+        var vm = this;
+        vm.listId = $stateParams.listId;
+        vm.error = false;
+        vm.books = [];
+        vm.selected = {
+            book: { id: null },
+            chapter: { id: null },
+            verse: { id: null }
+        };
+        vm.isLoading = true;
+        vm.save = save;
+        vm.onSelectBook = onSelectBook;
+        vm.onSelectChapter = onSelectChapter;
+
+        getBooks();
+
+        TranslationStateService.onChange('addVerseForm', onTranslationChange);
+
+        $transitions.onStart({}, function () {
+            TranslationStateService.unsubscribe('addVerseForm');
+        });
+
+        function save () {
+            vm.error = false;
+
+            if (!vm.selected.verse.realId) {
+                return;
+            }
+
+            vm.isLoading = true;
+
+            AppService.addVerseToList(vm.listId, vm.selected.verse.realId, TranslationStateService.getCurrent())
+                .then(onSave)
+                .catch(onError)
+                .finally(stopLoading);
+        }
+
+        function onSave() {
+            $scope.$emit('verse.added');
+        }
+
+        function onTranslationChange() {
+            if (vm.selected.chapter.id == null) {
+                return;
+            }
+
+            onSelectChapter(vm.selected.chapter);
+        }
+
+        function getBooks () {
+            vm.isLoading = true;
+
+            return ApiService.getBooks().then(function(books) {
+                vm.books = books;
+                vm.selected.book = vm.books[0];
+
+                return vm.selected.book.id;
+            }).then(ApiService.getChaptersFromBook).then(function(chapters) {
+                vm.chapters = chapters;
+                vm.selected.chapter = vm.chapters[0];
+
+                onSelectChapter(chapters[0]);
+            }).finally(function() {
+                vm.isLoading = false;
+            });
+        }
+
+        function onSelectBook (book) {
+            vm.isLoading = true;
+
+            ApiService.getChaptersFromBook(book.id)
+                .then(function(chapters) {
+                    vm.chapters = chapters;
+                    vm.selected.chapter = vm.chapters[0];
+
+                    onSelectChapter(chapters[0]);
+                }).finally(function() {
+                    vm.isLoading = false;
+                });
+        }
+
+        function onSelectChapter (chapter) {
+            vm.verses = [];
+
+            ApiService.getText(vm.selected.book.id, chapter.id, TranslationStateService.getCurrent()).then(function(text) {
+                for (var i = 0; i < text.length; i++) {
+                    vm.verses.push(
+                        {
+                            realId: text[i].id,
+                            id: text[i].verseId,
+                            verse: text[i].verse
+                        })
+                    ;
+                }
+
+                vm.selected.verse = vm.verses[0];
+            });
+        }
+
+        function onError(error) {
+            vm.error = error.data;
+        }
+
+        function stopLoading() {
+            vm.isLoading = false;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
         .directive('bookSelector', bookSelector);
 
     function bookSelector () {
@@ -517,6 +1049,10 @@ angular.module('app.core')
 
         function getBooks () {
             return ApiService.getBooks().then(function(books) {
+                for (var i = 0; i < books.length; i++) {
+                    books[i].testament = (books[i].testament === 'OT') ? 'Old Testament' : 'New Testament';
+                }
+
                 vm.books = books;
                 setSelectedBook(stateBookId);
 
@@ -846,12 +1382,16 @@ angular.module('app.core')
                         }
                     }
 
+                    console.log(vm.selected.translation);
+
                     vm.translations = translations;
                     vm.isLoading = false;
                 });
         }
 
         function onSelectTranslation (translation) {
+            vm.selected.translation = translation;
+
             TranslationStateService.change(translation);
         }
     }
@@ -956,6 +1496,158 @@ angular.module('app.core')
                 httpOptions = _getHttpOptions(endpoint, options);
 
             return $http.get(url, httpOptions).then(function(response) {
+                return response.data;
+            })
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('app.core')
+        .service('AppService', AppService);
+
+    AppService.$inject = ['$http', 'APP_API_URL', '$q'];
+
+    function AppService($http, APP_API_URL, $q) {
+        return {
+            login: login,
+            register: register,
+            me: me,
+            list: list,
+            listById: listById,
+            addList: addList,
+            removeList: removeList,
+            updateList: updateList,
+            getVersesFromList: getVersesFromList,
+            addVerseToList: addVerseToList,
+            removeVerseFromList: removeVerseFromList,
+            logout: logout
+        };
+
+        function getVersesFromList (listId) {
+            return _get('/lists/' + listId + '/verses', {
+                withCredentials: true
+            });
+        }
+
+        function addVerseToList (listId, verseId, translation) {
+            return _put('/lists/' + listId + '/verses/' + verseId + '?translation=' + translation, {}, {
+                withCredentials: true
+            });
+        }
+
+        function removeVerseFromList (listId, verseId, translation) {
+            return _delete('/lists/' + listId + '/verses/' + verseId + '?translation=' + translation, {
+                withCredentials: true
+            });
+        }
+
+        function login (email, password) {
+            return _post('/authenticate', {
+                email: email,
+                password: password
+            }, {
+                withCredentials: true
+            });
+        }
+
+        function me () {
+            return _get('/authenticate/me', {
+                withCredentials: true
+            });
+        }
+
+        function logout () {
+            return _get('/authenticate/logout', {
+                withCredentials: true
+            });
+        }
+
+        function list () {
+            return _get('/lists', {
+                withCredentials: true
+            });
+        }
+
+        function listById (id) {
+            return _get('/lists/' + id, {
+                withCredentials: true
+            });
+        }
+
+        function addList (list) {
+            return _post ('/lists', list, {
+                withCredentials: true
+            });
+        }
+
+        function updateList (id, list) {
+            return _put ('/lists/' + id, list, {
+                withCredentials: true
+            });
+        }
+
+        function removeList (id) {
+            return _delete ('/lists/' + id, {
+                withCredentials: true
+            });
+        }
+
+        function register (email, password, passwordConf) {
+            return _post('/register', {
+                email: email,
+                password: password,
+                passwordConf: passwordConf
+            });
+        }
+
+        function _getHttpOptions (endpoint, options) {
+            var defaultOptions = {},
+                httpOptions = {};
+
+            if (typeof options === 'object') {
+                httpOptions = angular.extend(options, defaultOptions)
+            } else {
+                httpOptions = defaultOptions;
+            }
+
+            return httpOptions;
+        }
+
+        function _post (endpoint, data, options) {
+            var url = APP_API_URL + endpoint,
+                httpOptions = _getHttpOptions(endpoint, options);
+
+            return $http.post(url, data, httpOptions).then(function(response) {
+                return response.data;
+            })
+        }
+
+        function _put (endpoint, data, options) {
+            var url = APP_API_URL + endpoint,
+                httpOptions = _getHttpOptions(endpoint, options);
+
+            return $http.put(url, data, httpOptions).then(function(response) {
+                return response.data;
+            })
+        }
+
+        function _get (endpoint, options) {
+            var url = APP_API_URL + endpoint,
+                httpOptions = _getHttpOptions(endpoint, options);
+
+            return $http.get(url, httpOptions).then(function(response) {
+                return response.data;
+            })
+        }
+
+        function _delete (endpoint, options) {
+            var url = APP_API_URL + endpoint,
+                httpOptions = _getHttpOptions(endpoint, options);
+
+            return $http.delete(url, httpOptions).then(function(response) {
                 return response.data;
             })
         }
@@ -1124,7 +1816,8 @@ angular.module('app.core')
         return {
             change: change,
             onChange: onChange,
-            getCurrent: getCurrent
+            getCurrent: getCurrent,
+            unsubscribe: unsubscribe
         };
 
         function change (translation) {
@@ -1143,6 +1836,12 @@ angular.module('app.core')
 
         function getCurrent () {
             return $cookies.get('translation');
+        }
+
+        function unsubscribe (key) {
+            changeFns[key] = null;
+
+            delete changeFns[key];
         }
     }
 })();

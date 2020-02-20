@@ -4,6 +4,12 @@ h3 {
     font-weight: normal;
     margin-bottom: 15px;
 }
+.bg-gray {
+    background-color: #f2f2f2;
+}
+.bg-brown, a.bg-brown:hover {
+    background-color: brown;
+}
 .fw-600 {
     font-weight: 600;
 }
@@ -20,7 +26,7 @@ h3 {
     background-color: #f2f2f2;
     position: fixed;
     top: 0;
-    z-index: 1;
+    z-index: 4;
     width: 400px;
     left: -400px;
     transition: 0.25s;
@@ -130,7 +136,7 @@ select {
     height: 65px;
     background-color: brown;
     padding: 15px 20px;
-    z-index: 1;
+    z-index: 3;
 }
 #topnav .title h2 {
     color: white;
@@ -160,8 +166,11 @@ select {
     right: 20px;
     top: 16px;
 }
+tr.selected, tr.selected:hover {
+    background-color: #fffdf8!important;
+}
 /* Responsive */
-@media screen and (max-width: 635px) {
+@media screen and (max-width: 800px) {
     #topnav .title h2 {
         font-size: 17px;
         line-height: 28px;
@@ -190,7 +199,7 @@ select {
         transition: none;
     }
 }
-@media screen and (max-width: 438px) {
+@media screen and (max-width: 880px) {
     .hide-xs {
         display: none;
     }

@@ -4,13 +4,14 @@
     angular.module('app.core')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$state', '$transitions', 'SearchStateService', 'ModalStateService', 'TitleStateService'];
+    HomeController.$inject = ['$state', '$cookies', 'AppService', '$transitions', 'SearchStateService', 'ModalStateService', 'TitleStateService'];
 
-    function HomeController ($state, $transitions, SearchStateService, ModalStateService, TitleStateService) {
+    function HomeController ($state, $cookies, AppService, $transitions, SearchStateService, ModalStateService, TitleStateService) {
         var vm = this;
         vm.navIsOpen = false;
         vm.title = 'Loading...';
         vm.onToggleLeftNav = onToggleLeftNav;
+        vm.loggedIn = $cookies.get('token');
 
         SearchStateService.onReady(onSearchResults);
         TitleStateService.onChange(onTitleChange);
@@ -33,6 +34,8 @@
             if (transition.to().name == 'home.book') {
                 ModalStateService.onOpen(closeNavigation);
             }
+
+            vm.loggedIn = $cookies.get('token');
         }
 
         function onTitleChange (value) {

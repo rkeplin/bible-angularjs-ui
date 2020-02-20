@@ -37,12 +37,16 @@
                         }
                     }
 
+                    console.log(vm.selected.translation);
+
                     vm.translations = translations;
                     vm.isLoading = false;
                 });
         }
 
         function onSelectTranslation (translation) {
+            vm.selected.translation = translation;
+
             TranslationStateService.change(translation);
         }
     }
