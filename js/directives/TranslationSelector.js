@@ -37,8 +37,6 @@
                         }
                     }
 
-                    console.log(vm.selected.translation);
-
                     vm.translations = translations;
                     vm.isLoading = false;
                 });

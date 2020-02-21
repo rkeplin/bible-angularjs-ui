@@ -500,7 +500,7 @@ angular.module('app.core')
         function showAddVerseForm () {
             vm.error = false;
 
-            vm.toggleAddForm = true;
+            vm.toggleAddForm = !vm.toggleAddForm;
             vm.toggleDeleteForm = false;
         }
 
@@ -561,9 +561,9 @@ angular.module('app.core')
     angular.module('app.core')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['AppService', '$state', 'TitleStateService'];
+    LoginController.$inject = ['AppService', '$cookies', '$state', 'TitleStateService'];
 
-    function LoginController (AppService, $state, TitleStateService) {
+    function LoginController (AppService, $cookies, $state, TitleStateService) {
         var vm = this;
         vm.error = false;
         vm.email = '';
@@ -586,6 +586,8 @@ angular.module('app.core')
         }
 
         function onLoginError(error) {
+            $cookies.remove('token');
+
             vm.error = error.data;
         }
 
@@ -612,7 +614,7 @@ angular.module('app.core')
 
         AppService.logout()
             .finally(function() {
-                $cookies.remove('token');
+                // $cookies.remove('token');
 
                 $state.go('home.login');
             });
@@ -1381,8 +1383,6 @@ angular.module('app.core')
                             vm.selected.translation = translations[i];
                         }
                     }
-
-                    console.log(vm.selected.translation);
 
                     vm.translations = translations;
                     vm.isLoading = false;

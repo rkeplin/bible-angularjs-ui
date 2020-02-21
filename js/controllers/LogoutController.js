@@ -11,7 +11,7 @@
 
         AppService.logout()
             .finally(function() {
-                $cookies.remove('token');
+                // $cookies.remove('token');
 
                 $state.go('home.login');
             });

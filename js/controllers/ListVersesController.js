@@ -33,7 +33,7 @@
         function showAddVerseForm () {
             vm.error = false;
 
-            vm.toggleAddForm = true;
+            vm.toggleAddForm = !vm.toggleAddForm;
             vm.toggleDeleteForm = false;
         }
 

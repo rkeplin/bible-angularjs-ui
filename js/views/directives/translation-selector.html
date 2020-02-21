@@ -3,6 +3,6 @@
 </button>
 <div class="dropdown-menu">
     <a ng-repeat="translation in vm.translations" class="dropdown-item" href="" ng-click="vm.onSelectTranslation(translation)" ng-class="{ 'bg-brown text-white': translation.id == vm.selected.translation.id }">
-        {{ translation.name }}
+        {{ translation.name || 'KJV' }}
     </a>
 </div>
