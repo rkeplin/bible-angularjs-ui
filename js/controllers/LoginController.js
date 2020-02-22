@@ -29,8 +29,6 @@
         }
 
         function onLoginError(error) {
-            $cookies.remove('token');
-
             vm.error = error.data;
         }
 
