@@ -4,82 +4,107 @@
 
         <button class="btn btn-secondary btn-sm pull pull-right" ng-click="vm.showAddForm()">Add List</button>
     </div>
-    <div ng-show="vm.toggleAddForm" class="alert alert-warning pr-4 pl-4 pb-4">
-        <div class="mb-3">Create a list</div>
-        <div class="row">
-            <div class="col-md-8 pr-1 mb-2">
-                <input name="name"
-                       class="form-control"
-                       ng-model="vm.list.name"
-                       type="text"
-                       placeholder="Enter list name..."
-                       ng-keypress="vm.onKeyPress($event)" />
-            </div>
-            <div class="col-md-2 pr-1 mb-2">
-                <button class="btn btn-block btn-warning" ng-disabled="vm.isLoading" ng-click="vm.add(vm.list)">Add</button>
-            </div>
-            <div class="col-md-2 pr-1 mb-2">
-                <button class="btn btn-block btn-warning" ng-click="vm.toggleAddForm = false">Cancel</button>
-            </div>
-        </div>
-    </div>
-    <div ng-show="vm.toggleUpdateForm" class="alert alert-warning pr-4 pl-4 pb-4">
-        <div class="mb-3">Update the selected list</div>
-        <div class="row">
-            <div class="col-md-8 pr-1 mb-2">
-                <input name="name"
-                       class="form-control"
-                       ng-model="vm.list.name"
-                       type="text"
-                       placeholder="Enter list name..."
-                       ng-keypress="vm.onKeyPress($event)" />
-            </div>
-            <div class="col-md-2 pr-1 mb-2">
-                <button class="btn btn-block btn-warning" ng-disabled="vm.isLoading" ng-click="vm.update(vm.list)">Save</button>
-            </div>
-            <div class="col-md-2 pr-1 mb-2">
-                <button class="btn btn-block btn-warning" ng-click="vm.toggleUpdateForm = false; vm.list.selected = false;">Cancel</button>
-            </div>
-        </div>
-    </div>
-    <div ng-show="vm.toggleDeleteForm" class="alert alert-danger pr-4 pl-4 pb-4">
-        <div class="row">
-            <div class="col-md-8 pr-1 mb-2">
-                Are you sure that you want to remove <b>{{ vm.list.name }}</b>?
-            </div>
-            <div class="col-md-2 pr-1 mb-2">
-                <button class="btn btn-block btn-danger" ng-disabled="vm.isLoading" ng-click="vm.remove(vm.list)">Yes</button>
-            </div>
-            <div class="col-md-2 pr-1 mb-2">
-                <button class="btn btn-block btn-danger" ng-click="vm.toggleDeleteForm = false; vm.list.selected = false;">No</button>
-            </div>
-        </div>
-    </div>
     <div class="card-body">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th width="150">Updated</th>
-                <th width="150" class="text-right">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="list in vm.lists" ng-class="{ 'selected': list.selected == true }">
-                <td>{{ list.name }}</td>
-                <td>{{ list.dateUpdated | date : 'mediumDate' }}</td>
-                <td class="text-right">
-                    <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Action
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="" ng-click="vm.showUpdateForm(list)">Rename</a>
-                        <a class="dropdown-item" ui-sref="home.listVerses({listId: list.id})">Verses</a>
-                        <a class="dropdown-item" href="" ng-click="vm.showDeleteForm(list)">Delete</a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div ng-show="vm.lists.length == 0">
+            You don't have a list yet.  <a href="" ng-hide="vm.toggleAddForm" ng-click="vm.showAddForm()">Add a list.</a>
+        </div>
+
+        <div class="well bg-gray mb20 p15" ng-repeat="list in vm.lists">
+            <button type="button" class="pull pull-right btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Action
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="" ng-click="vm.showUpdateForm(list)">Rename</a>
+                <a class="dropdown-item" href="" ng-click="vm.showDeleteForm(list)">Delete</a>
+            </div>
+
+            <p>
+            <b>Updated</b> - <i>{{ list.dateUpdated | date : 'mediumDate' }}</i>
+            </p>
+
+            <p><a ui-sref="home.listVerses({listId: list.id})">{{ list.name }}</a></p>
+        </div>
+    </div>
+</div>
+
+<div ng-show="vm.toggleAddForm" class="overlay">
+    <div class="dialog">
+        <div class="alert alert-danger mb-3" ng-show="vm.error">
+            <p ng-show="vm.error.description"><b>{{ vm.error.description }}</b></p>
+            <ul ng-show="vm.error.errors">
+                <li ng-repeat="error in vm.error.errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Create List
+            </div>
+            <div class="card-body">
+                <input name="name"
+                       class="form-control"
+                       ng-model="vm.list.name"
+                       type="text"
+                       placeholder="Enter list name..."
+                       ng-keypress="vm.onKeyPress($event)" />
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-default" ng-click="vm.toggleAddForm = false">Cancel</button>
+                <button class="btn btn-primary" ng-disabled="vm.isLoading" ng-click="vm.add(vm.list)">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-show="vm.toggleUpdateForm" class="overlay">
+    <div class="dialog">
+        <div class="alert alert-danger mb-3" ng-show="vm.error">
+            <p ng-show="vm.error.description"><b>{{ vm.error.description }}</b></p>
+            <ul ng-show="vm.error.errors">
+                <li ng-repeat="error in vm.error.errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Rename List
+            </div>
+            <div class="card-body">
+                <input name="name"
+                       class="form-control"
+                       ng-model="vm.list.name"
+                       type="text"
+                       placeholder="Enter list name..."
+                       ng-keypress="vm.onKeyPress($event)" />
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-default" ng-click="vm.toggleUpdateForm = false; vm.list.selected = false;">Cancel</button>
+                <button class="btn btn-primary" ng-disabled="vm.isLoading" ng-click="vm.update(vm.list)">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-show="vm.toggleDeleteForm" class="overlay">
+    <div class="dialog">
+        <div class="alert alert-danger mb-3" ng-show="vm.error">
+            <p ng-show="vm.error.description"><b>{{ vm.error.description }}</b></p>
+            <ul ng-show="vm.error.errors">
+                <li ng-repeat="error in vm.error.errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Delete List
+            </div>
+            <div class="card-body">
+                <p>Are you sure that you want to remove <b>{{ vm.list.name }}</b>?</p>
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-default" ng-click="vm.toggleDeleteForm = false;">No</button>
+                <button class="btn btn-primary" ng-disabled="vm.isLoading" ng-click="vm.remove(vm.list)">Yes</button>
+            </div>
+        </div>
     </div>
 </div>

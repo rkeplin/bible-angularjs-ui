@@ -25,11 +25,11 @@
 
         TitleStateService.change('<b>Manage Lists</b>');
 
+        window.scrollTo(0, 0);
+
         checkAuthorization().then(load);
 
         function showAddForm () {
-            clearSelectedLists();
-
             vm.toggleAddForm = !vm.toggleAddForm;
             vm.toggleUpdateForm = false;
             vm.toggleDeleteForm = false;
@@ -38,10 +38,6 @@
         }
 
         function showUpdateForm (list) {
-            clearSelectedLists();
-
-            list.selected = true;
-
             vm.toggleAddForm = false;
             vm.toggleUpdateForm = true;
             vm.toggleDeleteForm = false;
@@ -50,10 +46,6 @@
         }
 
         function showDeleteForm (list) {
-            clearSelectedLists();
-
-            list.selected = true;
-
             vm.toggleAddForm = false;
             vm.toggleUpdateForm = false;
             vm.toggleDeleteForm = true;
@@ -67,6 +59,10 @@
 
             AppService.addList(list)
                 .then(onSave)
+                .then(function () {
+                    window.scrollTo(0, 0);
+                    vm.toggleAddForm = false;
+                })
                 .catch(onError)
                 .finally(stopLoading)
         }
@@ -77,11 +73,11 @@
 
             AppService.updateList(list.id, list)
                 .then(onSave)
-                .catch(onError)
                 .then(function () {
-                    list.selected = false;
+                    window.scrollTo(0, 0);
                     vm.toggleUpdateForm = false;
                 })
+                .catch(onError)
                 .finally(stopLoading)
         }
 
@@ -90,6 +86,7 @@
 
             AppService.removeList(list.id)
                 .then(function () {
+                    window.scrollTo(0, 0);
                     vm.toggleDeleteForm = false;
                     vm.error = false;
                 })
@@ -135,12 +132,6 @@
                 if (vm.toggleUpdateForm) {
                     update(vm.list);
                 }
-            }
-        }
-
-        function clearSelectedLists () {
-            for (var i = 0; i < vm.lists.length; i++) {
-                vm.lists[i].selected = false;
             }
         }
 

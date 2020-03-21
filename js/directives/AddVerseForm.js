@@ -29,6 +29,7 @@
         };
         vm.isLoading = true;
         vm.save = save;
+        vm.cancel = cancel;
         vm.onSelectBook = onSelectBook;
         vm.onSelectChapter = onSelectChapter;
 
@@ -59,6 +60,10 @@
             $scope.$emit('verse.added');
         }
 
+        function cancel() {
+            $scope.$emit('add.cancel');
+        }
+
         function onTranslationChange() {
             if (vm.selected.chapter.id == null) {
                 return;
@@ -71,6 +76,10 @@
             vm.isLoading = true;
 
             return ApiService.getBooks().then(function(books) {
+                for (var i = 0; i < books.length; i++) {
+                    books[i].testament = (books[i].testament === 'OT') ? 'Old Testament' : 'New Testament';
+                }
+
                 vm.books = books;
                 vm.selected.book = vm.books[0];
 

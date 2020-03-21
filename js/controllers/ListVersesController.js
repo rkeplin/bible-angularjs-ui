@@ -24,10 +24,16 @@
 
         TitleStateService.change('<b>Manage Lists</b><span class="hide-xs"> - <i>Add Verses</i></span>');
 
+        window.scrollTo(0, 0);
+
         checkAuthorization().then(load);
 
         $scope.$on('verse.added', function() {
             load();
+        });
+
+        $scope.$on('add.cancel', function() {
+            vm.toggleAddForm = false;
         });
 
         function showAddVerseForm () {

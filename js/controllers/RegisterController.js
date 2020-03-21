@@ -17,6 +17,8 @@
 
         TitleStateService.change('Register');
 
+        window.scrollTo(0, 0);
+
         function register() {
             vm.error = false;
 

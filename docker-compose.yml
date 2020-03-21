@@ -16,7 +16,7 @@ services:
 
   php-api:
     image: rkeplin/bible-php-api:latest
-    # image: bible-php-api_php-api:latest
+    # build: ../bible-php-api
     restart: always
     ports:
       - 8083:80

@@ -4,20 +4,6 @@
 
         <button class="btn btn-secondary btn-sm pull pull-right" ng-click="vm.showAddVerseForm()">Add Verse</button>
     </div>
-    <add-verse-form ng-show="vm.toggleAddForm" list-id="vm.listId"></add-verse-form>
-    <div ng-show="vm.toggleDeleteForm" class="alert alert-danger pr-4 pl-4 pb-4">
-        <div class="row">
-            <div class="col-8 pr-1">
-                Are you sure that you want to remove <b>{{ vm.verse.text.book.name }} {{ vm.verse.text.chapterId }}:{{ vm.verse.text.verseId }} ({{ vm.verse.translation }})</b> from this list?
-            </div>
-            <div class="col-2 pr-1">
-                <button class="btn btn-block btn-danger" ng-disabled="vm.isLoading" ng-click="vm.remove(vm.verse)">Yes</button>
-            </div>
-            <div class="col-2 pr-1">
-                <button class="btn btn-block btn-danger" ng-click="vm.toggleDeleteForm = false; vm.verse.selected = false;">No</button>
-            </div>
-        </div>
-    </div>
     <div class="card-body">
         <div ng-show="vm.verses.length == 0">
             There are no verses on this list yet.  <a href="" ng-hide="vm.toggleAddForm" ng-click="vm.showAddVerseForm()">Add a verse.</a>
@@ -28,7 +14,33 @@
                 <b>{{ verse.text.book.name }}</b> - <i>{{ verse.text.book.testament }} ({{ verse.translation }})</i>
                 <a class="pull pull-right" title="Remove from list" href="" ng-click="vm.showDeleteForm(verse)">[x]</a>
             </p>
-            <p><b>{{ verse.text.chapterId }}:{{ verse.text.verseId }}</b> {{ verse.text.verse }}</p>
+            <p>
+                <b><a ui-sref="home.book({bookId: verse.text.book.id, chapterId: verse.text.chapterId, verseId: verse.text.verseId})">{{ verse.text.chapterId }}:{{ verse.text.verseId }}</a></b>
+                {{ verse.text.verse }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div ng-show="vm.toggleAddForm" class="overlay">
+    <div class="dialog">
+        <add-verse-form list-id="vm.listId"></add-verse-form>
+    </div>
+</div>
+
+<div ng-show="vm.toggleDeleteForm" class="overlay">
+    <div class="dialog">
+        <div class="card">
+            <div class="card-header">
+                Remove Verse
+            </div>
+            <div class="card-body">
+                Are you sure that you want to remove <b>{{ vm.verse.text.book.name }} {{ vm.verse.text.chapterId }}:{{ vm.verse.text.verseId }} ({{ vm.verse.translation }})</b> from this list?
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-default" ng-click="vm.toggleDeleteForm = false;">No</button>
+                <button class="btn btn-primary" ng-disabled="vm.isLoading" ng-click="vm.remove(vm.verse)">Yes</button>
+            </div>
         </div>
     </div>
 </div>

@@ -16,6 +16,8 @@
 
         TitleStateService.change('Login');
 
+        window.scrollTo(0, 0);
+
         function login() {
             vm.error = false;
 
