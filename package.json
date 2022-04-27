@@ -5,7 +5,7 @@
   "main": "Gruntfile.js",
   "dependencies": {},
   "devDependencies": {
-    "grunt": "1.0.1",
+    "grunt": "1.5.2",
     "grunt-contrib-concat": "1.0.1",
     "grunt-contrib-cssmin": "1.0.2",
     "grunt-contrib-uglify": "1.0.2",
